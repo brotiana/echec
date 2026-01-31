@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partie d'échecs - Échecs en Ligne</title>
+    <meta name="description" content="Jouez une partie d'échecs en ligne.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/icons.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon" id="logo-icon"></span>
+                <span>Échecs Online</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><span class="icon" id="nav-home"></span><span
+                        class="nav-link-text"> Accueil</span></a>
+                <a href="users.html" class="nav-link"><span class="icon" id="nav-users"></span><span
+                        class="nav-link-text"> Joueurs</span></a>
+                <a href="profile.html" class="nav-link"><span class="icon" id="nav-profile"></span><span
+                        class="nav-link-text"> Profil</span></a>
+            </div>
+
+            <div class="nav-user" id="nav-user-section"></div>
+        </div>
+    </nav>
+
+    <!-- Game Container -->
+    <div class="container">
+        <div class="game-container">
+            <!-- Main Game Area -->
+            <div class="game-main">
+                <!-- Player Info Top (Black) -->
+                <div class="game-info" id="top-player">
+                    <div class="player-info">
+                        <img src="uploads/profiles/default.png" alt="Joueur" class="player-avatar" id="black-avatar">
+                        <div>
+                            <div class="player-name" id="black-name">Adversaire</div>
+                            <div class="player-color"><span class="piece-color black"></span> Noirs</div>
+                        </div>
+                    </div>
+                    <div class="turn-indicator hidden" id="black-turn">C'est son tour</div>
+                </div>
+
+                <!-- Chess Board -->
+                <div class="chess-board" id="chess-board">
+                    <!-- Les cases seront générées par JavaScript -->
+                </div>
+
+                <!-- Player Info Bottom (White) -->
+                <div class="game-info" id="bottom-player">
+                    <div class="player-info">
+                        <img src="uploads/profiles/default.png" alt="Joueur" class="player-avatar" id="white-avatar">
+                        <div>
+                            <div class="player-name" id="white-name">Vous</div>
+                            <div class="player-color"><span class="piece-color white"></span> Blancs</div>
+                        </div>
+                    </div>
+                    <div class="turn-indicator" id="white-turn">C'est votre tour</div>
+                </div>
+
+                <!-- Game Actions -->
+                <div class="game-actions">
+                    <button class="btn btn-secondary" onclick="togglePublic()" id="btn-public">
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Rendre publique
+                    </button>
+                    <button class="btn btn-secondary" onclick="requestPause()" id="btn-pause">
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        Demander une pause
+                    </button>
+                    <button class="btn btn-danger" onclick="confirmAbandon()">
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                            <line x1="4" y1="22" x2="4" y2="15"></line>
+                        </svg>
+                        Abandonner
+                    </button>
+                </div>
+
+                <!-- Emotion Reaction Bar -->
+                <div class="emotion-bar">
+                    <button class="emotion-btn love" onclick="sendEmojiRain('❤️')" title="J'adore">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                    </button>
+                    <button class="emotion-btn haha" onclick="sendEmojiRain('😂')" title="Haha">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </button>
+                    <button class="emotion-btn cry" onclick="sendEmojiRain('😢')" title="Pleurer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Spectators (if public) -->
+                <div class="spectators-panel hidden" id="spectators-panel">
+                    <div class="spectators-title">
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Spectateurs (<span id="spectator-count">0</span>)
+                    </div>
+                    <div class="spectators-list" id="spectators-list"></div>
+                </div>
+            </div>
+
+            <!-- Chat Sidebar -->
+            <div class="game-sidebar">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h4>
+                            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                                </path>
+                            </svg>
+                            Chat
+                        </h4>
+                        <span class="text-muted" id="chat-status">En ligne</span>
+                    </div>
+
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="empty-state">
+                            <p class="text-muted">Aucun message pour l'instant</p>
+                        </div>
+                    </div>
+
+                    <!-- Emoji Bar -->
+                    <div class="emoji-bar">
+                        <button class="emoji-btn" onclick="sendEmojiRain('😊')" title="Sourire">😊</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('😂')" title="Rire">😂</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('🎉')" title="Fête">🎉</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('👏')" title="Applaudir">👏</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('🔥')" title="Feu">🔥</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('❤️')" title="Coeur">❤️</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('😢')" title="Triste">😢</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('🤔')" title="Penser">🤔</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('😎')" title="Cool">😎</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('🏆')" title="Trophée">🏆</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('💪')" title="Fort">💪</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('👍')" title="Pouce">👍</button>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Écrivez un message..."
+                            onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button class="btn btn-primary btn-icon" onclick="sendMessage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                height="18">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Move History -->
+                <div class="card mt-2" style="max-height: 200px; overflow-y: auto;">
+                    <h4 class="card-title">
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 3v5h5"></path>
+                            <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path>
+                            <path d="M12 7v5l4 2"></path>
+                        </svg>
+                        Historique
+                    </h4>
+                    <div id="move-history" class="text-muted">
+                        Partie en attente...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Chat Button -->
+    <button class="mobile-chat-btn" id="mobile-chat-btn" onclick="openMobileChat()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+            </path>
+        </svg>
+        <span class="chat-badge hidden" id="chat-badge">0</span>
+    </button>
+
+    <!-- Mobile Chat Popup -->
+    <div class="chat-popup-overlay" id="chat-popup-overlay" onclick="closeMobileChat(event)">
+        <div class="chat-popup" onclick="event.stopPropagation()">
+            <div class="chat-popup-header">
+                <h4>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
+                    </svg>
+                    Chat
+                </h4>
+                <button class="chat-popup-close" onclick="closeMobileChat()">&times;</button>
+            </div>
+            <div class="chat-popup-messages" id="chat-popup-messages">
+                <div class="empty-state">
+                    <p class="text-muted">Aucun message pour l'instant</p>
+                </div>
+            </div>
+            <div class="chat-popup-input">
+                <input type="text" class="chat-input" id="chat-input-mobile" placeholder="Écrivez un message..."
+                    onkeypress="if(event.key==='Enter') sendMessageMobile()">
+                <button class="btn btn-primary btn-icon" onclick="sendMessageMobile()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Rain Container -->
+    <div class="emoji-rain" id="emoji-rain"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Game Result Modal -->
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal">
+            <div class="game-result">
+                <div class="game-result-icon" id="result-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+                        <path
+                            d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z" />
+                    </svg>
+                </div>
+                <h2 class="game-result-title" id="result-title">Victoire!</h2>
+                <p class="game-result-subtitle" id="result-subtitle">Félicitations, vous avez gagné!</p>
+                <div class="flex gap-2">
+                    <a href="index.html" class="btn btn-secondary">Accueil</a>
+                    <button class="btn btn-primary" onclick="playAgain()">Rejouer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Request Modal -->
+    <div class="modal-overlay" id="pause-request-modal">
+        <div class="modal pause-modal">
+            <div class="modal-header">
+                <h3>Demande de pause</h3>
+                <button class="modal-close" onclick="closeModal('pause-request-modal')">&times;</button>
+            </div>
+            <p class="mb-2">Votre adversaire demande une pause.</p>
+            <p class="pause-info" id="pause-message"></p>
+            <div class="flex gap-2 mt-3">
+                <button class="btn btn-danger" onclick="respondToPause(false)">Refuser</button>
+                <button class="btn btn-success" onclick="respondToPause(true)">Accepter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Modal -->
+    <div class="modal-overlay" id="pause-modal">
+        <div class="modal pause-modal">
+            <div class="pause-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+            </div>
+            <h3>Partie en pause</h3>
+            <p class="pause-info">La partie est en pause. Elle reprendra à:</p>
+            <p class="resume-time" id="resume-time">-</p>
+            <button class="btn btn-primary mt-3" onclick="resumeGame()">Reprendre maintenant</button>
+        </div>
+    </div>
+
+    <!-- Abandon Confirm Modal -->
+    <div class="modal-overlay" id="abandon-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Abandonner la partie?</h3>
+                <button class="modal-close" onclick="closeModal('abandon-modal')">&times;</button>
+            </div>
+            <p class="mb-3">Êtes-vous sûr de vouloir abandonner? Votre adversaire gagnera la partie.</p>
+            <div class="flex gap-2">
+                <button class="btn btn-secondary" onclick="closeModal('abandon-modal')">Annuler</button>
+                <button class="btn btn-danger" onclick="abandonGame()">Abandonner</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/icons.js"></script>
+    <script src="js/chess.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Variables de jeu
+        let gameId = null;
+        let gameMode = 'online';
+        let isSpectator = false;
+        let currentGame = null;
+        let myColor = 'white';
+        let lastMessageId = 0;
+        let pollingInterval = null;
+
+        // Initialisation des icônes de navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('logo-icon').innerHTML = Icons.chessPawn;
+            const navHome = document.getElementById('nav-home');
+            const navUsers = document.getElementById('nav-users');
+            const navProfile = document.getElementById('nav-profile');
+            if (navHome) navHome.innerHTML = Icons.home;
+            if (navUsers) navUsers.innerHTML = Icons.users;
+            if (navProfile) navProfile.innerHTML = Icons.user;
+        });
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initApp();
+
+            const params = new URLSearchParams(window.location.search);
+            gameId = params.get('id');
+            gameMode = params.get('mode') || 'online';
+            isSpectator = params.get('spectator') === 'true';
+
+            if (gameMode === 'computer') {
+                initComputerGame();
+            } else if (gameId) {
+                await loadGame();
+                startPolling();
+            } else {
+                showToast('Aucune partie spécifiée', 'error');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+            }
+        });
+
+        // Mode contre l'ordinateur
+        async function initComputerGame() {
+            document.getElementById('black-name').textContent = 'Ordinateur';
+            document.getElementById('btn-pause').classList.add('hidden');
+            document.getElementById('btn-public').classList.add('hidden');
+
+            // Créer une partie locale
+            try {
+                const response = await fetch('api/games.php?action=create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vs_computer: true })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    gameId = data.game_id;
+                }
+            } catch (e) {
+                // Jouer en mode local si pas de connexion
+            }
+
+            // Définir le joueur comme blancs
+            chess.setPlayerColor('white');
+            initChessBoard();
+            updateTurnIndicator('white');
+        }
+
+        // Charger une partie existante
+        async function loadGame() {
+            try {
+                const response = await fetch(`api/games.php?action=get&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    showToast(data.error || 'Partie non trouvée', 'error');
+                    return;
+                }
+
+                currentGame = data.game;
+
+                // Déterminer ma couleur
+                if (currentUser) {
+                    if (currentGame.white_player_id == currentUser.id) {
+                        myColor = 'white';
+                    } else if (currentGame.black_player_id == currentUser.id) {
+                        myColor = 'black';
+                    } else {
+                        isSpectator = true;
+                    }
+                }
+
+                // Définir la couleur du joueur
+                chess.setPlayerColor(myColor);
+
+                // Mettre à jour l'interface
+                updatePlayerInfo();
+
+                // Charger l'état du plateau
+                const boardState = JSON.parse(currentGame.board_state);
+                initChessBoard(boardState);
+                updateTurnIndicator(currentGame.current_turn);
+
+                // Vérifier si la partie est en pause
+                if (currentGame.status === 'paused') {
+                    openModal('pause-modal');
+                    if (currentGame.resume_scheduled_at) {
+                        document.getElementById('resume-time').textContent =
+                            new Date(currentGame.resume_scheduled_at).toLocaleString('fr-FR');
+                    }
+                }
+
+                // Vérifier si en attente d'adversaire
+                if (currentGame.status === 'waiting') {
+                    showToast('En attente que votre adversaire accepte l\'invitation...', 'info');
+                    // Désactiver le plateau
+                    document.querySelectorAll('.chess-square').forEach(sq => {
+                        sq.style.pointerEvents = 'none';
+                    });
+                }
+
+                // Vérifier si terminée
+                if (currentGame.status === 'completed' || currentGame.status === 'abandoned') {
+                    showGameResult();
+                }
+
+                // Charger les derniers coups
+                updateMoveHistory(data.moves);
+
+                // Mode spectateur
+                if (isSpectator) {
+                    document.querySelectorAll('.game-actions button').forEach(btn => {
+                        btn.classList.add('hidden');
+                    });
+                    showToast('Mode spectateur', 'info');
+                }
+
+                // Gérer partie publique
+                if (currentGame.is_public) {
+                    document.getElementById('btn-public').innerHTML = `
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Rendre privée`;
+                    document.getElementById('spectators-panel').classList.remove('hidden');
+                    document.getElementById('spectator-count').textContent = data.spectator_count;
+                }
+
+            } catch (error) {
+                showToast('Erreur de chargement', 'error');
+                console.error(error);
+            }
+        }
+
+        function updatePlayerInfo() {
+            if (!currentGame) return;
+
+            document.getElementById('white-name').textContent =
+                currentGame.white_username || 'Anonyme';
+            document.getElementById('white-avatar').src =
+                'uploads/profiles/' + (currentGame.white_photo || 'default.png');
+
+            document.getElementById('black-name').textContent =
+                currentGame.black_username || 'En attente...';
+            document.getElementById('black-avatar').src =
+                'uploads/profiles/' + (currentGame.black_photo || 'default.png');
+        }
+
+        function updateTurnIndicator(turn) {
+            const whiteIndicator = document.getElementById('white-turn');
+            const blackIndicator = document.getElementById('black-turn');
+
+            if (turn === 'white') {
+                whiteIndicator.classList.remove('hidden');
+                blackIndicator.classList.add('hidden');
+                whiteIndicator.textContent = myColor === 'white' ? "C'est votre tour" : "C'est son tour";
+            } else {
+                whiteIndicator.classList.add('hidden');
+                blackIndicator.classList.remove('hidden');
+                blackIndicator.textContent = myColor === 'black' ? "C'est votre tour" : "C'est son tour";
+            }
+        }
+
+        function updateMoveHistory(moves) {
+            const container = document.getElementById('move-history');
+            if (!moves || moves.length === 0) {
+                container.innerHTML = '<p class="text-muted">Aucun coup joué</p>';
+                return;
+            }
+
+            let html = '<div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 0.25rem;">';
+            for (let i = 0; i < moves.length; i += 2) {
+                const moveNum = Math.floor(i / 2) + 1;
+                html += `<span class="text-muted">${moveNum}.</span>`;
+                html += `<span>${moves[i]?.move_notation || ''}</span>`;
+                html += `<span>${moves[i + 1]?.move_notation || ''}</span>`;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Polling pour les mises à jour
+        function startPolling() {
+            pollingInterval = setInterval(async () => {
+                await checkGameUpdates();
+                await loadNewMessages();
+            }, 2000);
+        }
+
+        async function checkGameUpdates() {
+            if (!gameId || gameMode === 'computer') return;
+
+            try {
+                const response = await fetch(`api/games.php?action=get&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (data.success && data.game) {
+                    const newGame = data.game;
+
+                    // Vérifier si le plateau a changé
+                    if (newGame.board_state !== currentGame?.board_state) {
+                        const boardState = JSON.parse(newGame.board_state);
+                        updateBoardState(boardState);
+                        updateTurnIndicator(newGame.current_turn);
+                        updateMoveHistory(data.moves);
+                    }
+
+                    // Vérifier demande de pause
+                    if (newGame.pause_status === 'pending' &&
+                        newGame.pause_requester != currentUser?.id) {
+                        document.getElementById('pause-message').textContent =
+                            newGame.requested_resume_at
+                                ? `Reprise prévue: ${new Date(newGame.requested_resume_at).toLocaleString('fr-FR')}`
+                                : '';
+                        openModal('pause-request-modal');
+                    }
+
+                    // Vérifier si en pause
+                    if (newGame.status === 'paused' && currentGame?.status !== 'paused') {
+                        openModal('pause-modal');
+                    }
+
+                    // Vérifier si la partie est passée de waiting à active
+                    if (newGame.status === 'active' && currentGame?.status === 'waiting') {
+                        showToast('Votre adversaire a accepté! La partie commence!', 'success');
+                        // Réactiver le plateau
+                        document.querySelectorAll('.chess-square').forEach(sq => {
+                            sq.style.pointerEvents = '';
+                        });
+                    }
+
+                    // Vérifier si terminée
+                    if ((newGame.status === 'completed' || newGame.status === 'abandoned')
+                        && currentGame?.status === 'active') {
+                        showGameResult(newGame);
+                    }
+
+                    currentGame = newGame;
+                }
+            } catch (error) {
+                console.error('Polling error:', error);
+            }
+        }
+
+        async function loadNewMessages() {
+            if (!gameId || isSpectator) return;
+
+            try {
+                const response = await fetch(
+                    `api/chat.php?action=get_game_messages&game_id=${gameId}&last_id=${lastMessageId}`
+                );
+                const data = await response.json();
+
+                if (data.success && data.messages.length > 0) {
+                    const container = document.getElementById('chat-messages');
+
+                    // Supprimer l'état vide si présent
+                    const emptyState = container.querySelector('.empty-state');
+                    if (emptyState) emptyState.remove();
+
+                    let newMsgCount = 0;
+                    data.messages.forEach(msg => {
+                        if (msg.is_emoji_rain) {
+                            triggerEmojiRain(msg.emoji_type);
+                        } else {
+                            appendMessage(msg);
+                            // Count unread messages from others
+                            if (!currentUser || msg.sender_id != currentUser.id) {
+                                newMsgCount++;
+                            }
+                        }
+                        lastMessageId = Math.max(lastMessageId, msg.id);
+                    });
+
+                    container.scrollTop = container.scrollHeight;
+
+                    // Update unread count if mobile chat is closed
+                    if (typeof isMobileChatOpen !== 'undefined' && !isMobileChatOpen && newMsgCount > 0) {
+                        unreadMessages += newMsgCount;
+                        updateChatBadge();
+                    }
+
+                    // Sync mobile popup if open
+                    if (typeof isMobileChatOpen !== 'undefined' && isMobileChatOpen) {
+                        syncMobileChat();
+                    }
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+            }
+        }
+
+        function appendMessage(msg) {
+            const container = document.getElementById('chat-messages');
+            const isOwn = currentUser && msg.sender_id == currentUser.id;
+
+            const div = document.createElement('div');
+            div.className = `chat-message ${isOwn ? 'own' : ''}`;
+            div.innerHTML = `
+                <img src="uploads/profiles/${msg.sender_photo || 'default.png'}" 
+                     alt="${msg.sender_username}" class="message-avatar">
+                <div class="message-content">
+                    <div class="message-text">${escapeHtml(msg.content)}</div>
+                    <div class="message-time">${formatTime(msg.created_at)}</div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        // Envoyer un message
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const content = input.value.trim();
+
+            if (!content || !currentUser) return;
+
+            input.value = '';
+
+            try {
+                await fetch('api/chat.php?action=send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        content: content
+                    })
+                });
+                // Recharger les messages immédiatement
+                await loadNewMessages();
+            } catch (error) {
+                showToast('Erreur d\'envoi', 'error');
+            }
+        }
+
+        // Mobile Chat Functions
+        let unreadMessages = 0;
+        let isMobileChatOpen = false;
+
+        function openMobileChat() {
+            const overlay = document.getElementById('chat-popup-overlay');
+            overlay.classList.add('active');
+            isMobileChatOpen = true;
+
+            // Reset unread count
+            unreadMessages = 0;
+            updateChatBadge();
+
+            // Sync messages to mobile popup
+            syncMobileChat();
+        }
+
+        function closeMobileChat(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const overlay = document.getElementById('chat-popup-overlay');
+            overlay.classList.remove('active');
+            isMobileChatOpen = false;
+        }
+
+        function syncMobileChat() {
+            const desktopMessages = document.getElementById('chat-messages');
+            const mobileMessages = document.getElementById('chat-popup-messages');
+            mobileMessages.innerHTML = desktopMessages.innerHTML;
+            mobileMessages.scrollTop = mobileMessages.scrollHeight;
+        }
+
+        function updateChatBadge() {
+            const badge = document.getElementById('chat-badge');
+            if (unreadMessages > 0) {
+                badge.textContent = unreadMessages > 99 ? '99+' : unreadMessages;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        async function sendMessageMobile() {
+            const input = document.getElementById('chat-input-mobile');
+            const content = input.value.trim();
+
+            if (!content || !currentUser) return;
+
+            input.value = '';
+
+            try {
+                await fetch('api/chat.php?action=send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        content: content
+                    })
+                });
+                // Recharger les messages immédiatement
+                await loadNewMessages();
+            } catch (error) {
+                showToast('Erreur d\'envoi', 'error');
+            }
+        }
+
+        // Pluie d'emojis
+        async function sendEmojiRain(emoji) {
+            if (!currentUser || isSpectator) {
+                showToast('Connectez-vous pour utiliser les emojis', 'warning');
+                return;
+            }
+
+            // Afficher localement
+            triggerEmojiRain(emoji);
+
+            // Envoyer au serveur
+            try {
+                await fetch('api/chat.php?action=emoji_rain', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        emoji: emoji
+                    })
+                });
+            } catch (error) {
+                console.error('Emoji rain error:', error);
+            }
+        }
+
+        function triggerEmojiRain(emoji) {
+            const container = document.getElementById('emoji-rain');
+            const count = 30;
+
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const span = document.createElement('span');
+                    span.className = 'falling-emoji';
+                    span.textContent = emoji;
+                    span.style.left = Math.random() * 100 + '%';
+                    span.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    span.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+                    container.appendChild(span);
+
+                    setTimeout(() => span.remove(), 4000);
+                }, i * 50);
+            }
+        }
+
+        // Actions de jeu
+        function togglePublic() {
+            if (!currentUser || isSpectator) return;
+
+            fetch('api/games.php?action=toggle_public', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const btn = document.getElementById('btn-public');
+                        const panel = document.getElementById('spectators-panel');
+
+                        if (data.is_public) {
+                            btn.innerHTML = `
+                                <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Rendre privée`;
+                            panel.classList.remove('hidden');
+                        } else {
+                            btn.innerHTML = `
+                                <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                Rendre publique`;
+                            panel.classList.add('hidden');
+                        }
+                        showToast(data.message, 'success');
+                    }
+                });
+        }
+
+        function requestPause() {
+            if (!currentUser || isSpectator) return;
+
+            const resumeAt = prompt('Quand souhaitez-vous reprendre? (ex: 2024-01-30 15:00)');
+
+            fetch('api/games.php?action=request_pause', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game_id: gameId,
+                    resume_at: resumeAt,
+                    message: 'Demande de pause'
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    showToast(data.message || data.error, data.success ? 'success' : 'error');
+                });
+        }
+
+        async function respondToPause(accept) {
+            closeModal('pause-request-modal');
+
+            const response = await fetch('api/games.php?action=respond_pause', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId, accept: accept })
+            });
+            const data = await response.json();
+
+            showToast(data.message, data.success ? 'success' : 'error');
+
+            if (accept) {
+                openModal('pause-modal');
+            }
+        }
+
+        async function resumeGame() {
+            closeModal('pause-modal');
+
+            const response = await fetch('api/games.php?action=resume', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            });
+            const data = await response.json();
+
+            showToast(data.message, data.success ? 'success' : 'error');
+        }
+
+        function confirmAbandon() {
+            openModal('abandon-modal');
+        }
+
+        async function abandonGame() {
+            closeModal('abandon-modal');
+
+            const response = await fetch('api/games.php?action=abandon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                showGameResult({
+                    winner_id: data.winner_id,
+                    status: 'abandoned'
+                });
+            }
+        }
+
+        function showGameResult(game = currentGame) {
+            const modal = document.getElementById('result-modal');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const subtitle = document.getElementById('result-subtitle');
+
+            let isWinner = currentUser && game.winner_id == currentUser.id;
+            let isDraw = !game.winner_id && game.status === 'completed';
+
+            if (isDraw) {
+                icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="64" height="64"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+                title.textContent = 'Match Nul!';
+                subtitle.textContent = 'Belle partie!';
+            } else if (isWinner) {
+                icon.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="64" height="64"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>`;
+                title.textContent = 'Victoire!';
+                subtitle.textContent = 'Félicitations, vous avez gagné!';
+            } else {
+                icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="64" height="64"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>`;
+                title.textContent = 'Défaite';
+                subtitle.textContent = game.status === 'abandoned'
+                    ? 'Votre adversaire a gagné par abandon'
+                    : 'Vous ferez mieux la prochaine fois!';
+            }
+
+            openModal('result-modal');
+            clearInterval(pollingInterval);
+        }
+
+        function playAgain() {
+            if (gameMode === 'computer') {
+                location.reload();
+            } else {
+                window.location.href = 'users.html';
+            }
+        }
+
+        // Callbacks du jeu d'échecs
+        async function onMoveComplete(from, to, piece, boardState, capturedPiece, isCheck, isCheckmate) {
+            if (isSpectator) return;
+
+            // Mode ordinateur - le joueur a joué
+            if (gameMode === 'computer') {
+                updateTurnIndicator(chess.currentTurn);
+
+                if (isCheckmate) {
+                    setTimeout(() => {
+                        showGameResult({ winner_id: currentUser?.id, status: 'completed' });
+                    }, 500);
+                } else if (chess.isDraw) {
+                    setTimeout(() => {
+                        showGameResult({ winner_id: null, status: 'completed' });
+                    }, 500);
+                } else {
+                    // L'ordinateur joue après un délai
+                    setTimeout(() => {
+                        const aiMove = chess.makeAIMove();
+                        if (aiMove) {
+                            updateTurnIndicator(chess.currentTurn);
+                            if (aiMove.isCheckmate) {
+                                setTimeout(() => {
+                                    showGameResult({ winner_id: null, status: 'completed' });
+                                }, 500);
+                            } else if (chess.isDraw) {
+                                setTimeout(() => {
+                                    showGameResult({ winner_id: null, status: 'completed' });
+                                }, 500);
+                            }
+                        }
+                    }, 500);
+                }
+                return;
+            }
+
+            // Mode en ligne
+            try {
+                const response = await fetch('api/games.php?action=move', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        from: from,
+                        to: to,
+                        piece_type: piece,
+                        board_state: JSON.stringify(boardState),
+                        captured_piece: capturedPiece,
+                        is_check: isCheck,
+                        is_checkmate: isCheckmate
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    showToast(data.error, 'error');
+                    // Restaurer le plateau
+                    loadGame();
+                } else {
+                    updateTurnIndicator(data.next_turn);
+
+                    if (data.is_checkmate) {
+                        showGameResult({ winner_id: currentUser?.id, status: 'completed' });
+                    }
+                }
+            } catch (error) {
+                showToast('Erreur de communication', 'error');
+            }
+        }
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+
+        // Utilitaires
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+
+    <style>
+        /* Pièce color indicators */
+        .piece-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .piece-color.white {
+            background: #fff;
+            border: 1px solid #333;
+        }
+
+        .piece-color.black {
+            background: #333;
+            border: 1px solid #fff;
+        }
+
+        /* Button icon SVG */
+        .btn-icon-svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* Game result icon container */
+        .game-result-icon {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        /* Pause icon */
+        .pause-icon {
+            margin-bottom: 1rem;
+            color: var(--warning);
+        }
+    </style>
+</body>
+
+</html>

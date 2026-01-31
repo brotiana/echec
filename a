@@ -1,0 +1,33 @@
+creez un site web d'echec et de fanorona en ligne :
+- fanorona est un jeux tipique de echec mais ne le creer pas encore , on va juste se concentrer sur l'echec mainenant .
+- il doit avoir un systeme de connexion et d'inscription .
+- l'inscription et connexion est obligatoire pour deux joueur distant (online)
+- l'inscription n'est pas obligatoir pour le persnne qui eux jouer avec l'ordinateur 
+- ajouter un chat sur l'ecran pour que les deux joueur se communique
+- ajouter des emoji d'emotion , et si un utilisteur le clique l'autre utilisateur recevra beaucoup de ce emoji (comme un pluie d'emoji)
+- ajouter un bouton pour que les deux joueur puisse abandonner la partie
+- il doit être responsive 
+- ajouter un page pour voir la liste des utilisateur actif et inviter un utilisateur à jouer
+- la liste d'utilisateur montre aussi les message qu'on s'est ecrit lorsque on le clique
+- chaque utilisateur a un profile comme des profiles de réseaux socio et on peut voir ses parties et ses statistiques
+- il y a un option pour rendre l'echec public et autre utilisateur pourrontle regarder .
+- lorsqun utilisateur gagne , il y a un genre de publication automatique sur le profie des deux utilisateur indiquat qui a gagné 
+- utilise js , css , mysql pour faire ce site 
+- on peut ajouter un photo sur un profile
+- le mot de passe minimum pour creer un compte est de 1à caractere au minimum
+- je vais utilisez xampp donc donnez seulement le code sql pour creer les table et bd
+
+
+
+
+- sur le jouer avec l'ordinateur : une fois que je deplace un pion , tous les autres pions bouge automatiquement à l'infini même le mien et je ne joue plus . Les joueurs sont tous blanc et il n'y a pas de noir . Les carré , certain sont des rectangle tres fin .
+- remplace tous les emojis par des vrais icones .
+
+
+
+
+Il faut que vous apportez plusieur modification sur le site :
+- sur un petit ecran lorsqu'on joue , la conversation doit être caché et si il y a un nouveaux message , il y aura un chiffre en rouge sur l'icone de la conversation . et si on clique sur l'icone de la conversation , la conversation s'ouvre et le chiffre disparait et il y aura un popup qui s'ouvre et le chat s'affiche dans ce popup . 
+- les emojis d'emotion doit etre remplacé par des vrais icones si possible et voici les seul icone d'emotion à afficher sur le bas de l'echec mais pas dans la conversatin : j'adore , haha , pleurer .
+- Sur un petit d'ecran , ces 3 option sont caché et il ne faut pas que ça le soit mais on affiche seulement les icones et pas les mots sur le bas alligné avec le message !: Accueil, Joueurs, Profil
+- lorsqun utilisateur envoye un invitation de jouer et que l'autre utilisateur accepte : actuelement le tableau d'echec s'affiche sur le joueur qui a accepté uniquement mais pa sur celui qui a envoyé l'invitation . Donc , lorsque quelqun envoye un invitation , il faut que le tableaux du jeux s'affiche imediatement pour lui et il y aura un notification si l'autre joueur a accepté de jouer .

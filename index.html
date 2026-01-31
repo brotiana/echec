@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Échecs en Ligne - Jouez aux échecs gratuitement</title>
+    <meta name="description"
+        content="Jouez aux échecs en ligne gratuitement contre des joueurs du monde entier ou contre l'ordinateur. Chat en temps réel, statistiques et classement.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/icons.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon" id="logo-icon"></span>
+                <span>Échecs Online</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">
+                    <span class="nav-icon" id="icon-home"></span> Accueil
+                </a>
+                <a href="users.html" class="nav-link" id="nav-users">
+                    <span class="nav-icon" id="icon-users"></span> Joueurs
+                </a>
+                <a href="profile.html" class="nav-link" id="nav-profile">
+                    <span class="nav-icon" id="icon-profile"></span> Profil
+                </a>
+            </div>
+
+            <div class="nav-user" id="nav-user-section">
+                <!-- Sera rempli par JavaScript -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Jouez aux Échecs<br>en Ligne</h1>
+            <p class="hero-subtitle">
+                Affrontez des joueurs du monde entier ou perfectionnez-vous contre notre IA.
+                Chat en temps réel, statistiques détaillées et bien plus encore.
+            </p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" onclick="playVsComputer()">
+                    <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Jouer contre l'ordinateur
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="playOnline()">
+                    <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                    Jouer en ligne
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features container">
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <line x1="6" y1="12" x2="10" y2="12"></line>
+                    <line x1="8" y1="10" x2="8" y2="14"></line>
+                    <line x1="15" y1="13" x2="15.01" y2="13"></line>
+                    <line x1="18" y1="11" x2="18.01" y2="11"></line>
+                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                </svg>
+            </div>
+            <h3 class="feature-title">Jeu en Temps Réel</h3>
+            <p class="feature-desc">Affrontez des joueurs du monde entier avec notre système de jeu en temps réel.</p>
+        </div>
+
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <path
+                        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="feature-title">Chat Intégré</h3>
+            <p class="feature-desc">Communiquez avec votre adversaire pendant la partie avec des emojis animés.</p>
+        </div>
+
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <line x1="12" y1="20" x2="12" y2="10"></line>
+                    <line x1="18" y1="20" x2="18" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="16"></line>
+                </svg>
+            </div>
+            <h3 class="feature-title">Statistiques</h3>
+            <p class="feature-desc">Suivez votre progression avec des statistiques détaillées et un historique complet.
+            </p>
+        </div>
+
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <h3 class="feature-title">Communauté</h3>
+            <p class="feature-desc">Rejoignez une communauté active de joueurs passionnés d'échecs.</p>
+        </div>
+
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+            <h3 class="feature-title">Mode Spectateur</h3>
+            <p class="feature-desc">Regardez les parties publiques et apprenez des meilleurs joueurs.</p>
+        </div>
+
+        <div class="feature-card card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+            </div>
+            <h3 class="feature-title">Pause & Reprise</h3>
+            <p class="feature-desc">Mettez vos parties en pause et reprenez-les plus tard avec l'accord de votre
+                adversaire.</p>
+        </div>
+    </section>
+
+    <!-- Public Games Section -->
+    <section class="container" style="padding: 2rem 0;">
+        <h2 class="text-center mb-3" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+                <circle cx="12" cy="8" r="7"></circle>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+            Parties Publiques en Cours
+        </h2>
+        <div id="public-games" class="features">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Invitations Panel -->
+    <div class="invitations-panel" id="invitations-panel"></div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Connexion requise</h3>
+                <button class="modal-close" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <p class="mb-3">Vous devez être connecté pour jouer en ligne et accéder à toutes les fonctionnalités.</p>
+            <div class="flex gap-2">
+                <a href="auth.html" class="btn btn-primary w-full">Se connecter</a>
+                <a href="auth.html#register" class="btn btn-secondary w-full">S'inscrire</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/icons.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Initialisation de la page d'accueil
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialiser les icônes de navigation
+            document.getElementById('logo-icon').innerHTML = Icons.chessPawn;
+            document.getElementById('icon-home').innerHTML = Icons.home;
+            document.getElementById('icon-users').innerHTML = Icons.users;
+            document.getElementById('icon-profile').innerHTML = Icons.user;
+
+            await initApp();
+            loadPublicGames();
+        });
+
+        async function loadPublicGames() {
+            const container = document.getElementById('public-games');
+            try {
+                const response = await fetch('api/games.php?action=public_games');
+                const data = await response.json();
+
+                if (data.success && data.games.length > 0) {
+                    container.innerHTML = data.games.map(game => `
+                        <div class="card feature-card" style="cursor: pointer;" onclick="watchGame(${game.id})">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="player-info">
+                                    <img src="uploads/profiles/${game.white_photo || 'default.png'}" 
+                                         alt="${game.white_username}" class="player-avatar" 
+                                         style="width: 36px; height: 36px;">
+                                    <span>${game.white_username || 'Anonyme'}</span>
+                                </div>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <div class="player-info">
+                                    <span>${game.black_username || 'Anonyme'}</span>
+                                    <img src="uploads/profiles/${game.black_photo || 'default.png'}" 
+                                         alt="${game.black_username}" class="player-avatar"
+                                         style="width: 36px; height: 36px;">
+                                </div>
+                            </div>
+                            <div class="text-center text-muted" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>${game.spectator_count} spectateurs</span>
+                                <span>• Tour: <span class="piece-color ${game.current_turn}"></span></span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
+                            </div>
+                            <p>Aucune partie publique en cours</p>
+                            <p class="text-muted">Lancez une partie et rendez-la publique!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-muted text-center">Erreur de chargement</p>';
+            }
+        }
+
+        function playVsComputer() {
+            // Pas besoin d'être connecté
+            window.location.href = 'game.html?mode=computer';
+        }
+
+        function playOnline() {
+            if (!currentUser) {
+                openModal('login-modal');
+            } else {
+                window.location.href = 'users.html';
+            }
+        }
+
+        function watchGame(gameId) {
+            window.location.href = `game.html?id=${gameId}&spectator=true`;
+        }
+
+        // Rafraîchir les parties publiques toutes les 30 secondes
+        setInterval(loadPublicGames, 30000);
+    </script>
+
+    <style>
+        /* Navigation icons */
+        .nav-icon {
+            display: inline-flex;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Logo icon */
+        .logo-icon {
+            display: inline-flex;
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--primary);
+        }
+
+        /* Button icon SVG */
+        .btn-icon-svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Feature icon */
+        .feature-icon {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Piece color indicators */
+        .piece-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+
+        .piece-color.white {
+            background: #fff;
+            border: 1px solid #333;
+        }
+
+        .piece-color.black {
+            background: #333;
+            border: 1px solid #fff;
+        }
+
+        /* Empty state icon */
+        .empty-icon {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+    </style>
+</body>
+
+</html>

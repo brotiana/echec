@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Échecs en Ligne</title>
+    <meta name="description" content="Consultez votre profil, statistiques et historique de parties d'échecs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/icons.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon" id="logo-icon"></span>
+                <span>Échecs Online</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon" id="icon-home"></span> Accueil
+                </a>
+                <a href="users.html" class="nav-link">
+                    <span class="nav-icon" id="icon-users"></span> Joueurs
+                </a>
+                <a href="profile.html" class="nav-link active">
+                    <span class="nav-icon" id="icon-profile"></span> Profil
+                </a>
+            </div>
+
+            <div class="nav-user" id="nav-user-section"></div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="container profile-container">
+        <!-- Header -->
+        <div class="profile-header card">
+            <div class="profile-avatar-container">
+                <img src="uploads/profiles/default.png" alt="Photo de profil" class="profile-avatar"
+                    id="profile-avatar">
+                <button class="profile-avatar-edit" id="edit-photo-btn" style="display: none;"
+                    onclick="document.getElementById('photo-upload').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                        </path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </button>
+                <input type="file" id="photo-upload" style="display: none;" accept="image/*"
+                    onchange="uploadPhoto(this)">
+            </div>
+
+            <div class="profile-info">
+                <h1 class="profile-name" id="profile-name">Chargement...</h1>
+                <p class="profile-bio" id="profile-bio"></p>
+                <div class="profile-meta">
+                    <span>
+                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            width="16" height="16">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Membre depuis <span id="member-since">-</span>
+                    </span>
+                    <span>
+                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            width="16" height="16">
+                            <line x1="6" y1="12" x2="10" y2="12"></line>
+                            <line x1="8" y1="10" x2="8" y2="14"></line>
+                            <line x1="15" y1="13" x2="15.01" y2="13"></line>
+                            <line x1="18" y1="11" x2="18.01" y2="11"></line>
+                            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                        </svg>
+                        <span id="total-games">0</span> parties jouées
+                    </span>
+                    <span>
+                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            width="16" height="16">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                        <span id="win-rate">0</span>% de victoires
+                    </span>
+                </div>
+                <div class="mt-2" id="profile-actions"></div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card card">
+                <div class="stat-value" id="stat-wins">0</div>
+                <div class="stat-label">Victoires</div>
+            </div>
+            <div class="stat-card card">
+                <div class="stat-value" id="stat-losses">0</div>
+                <div class="stat-label">Défaites</div>
+            </div>
+            <div class="stat-card card">
+                <div class="stat-value" id="stat-draws">0</div>
+                <div class="stat-label">Nuls</div>
+            </div>
+            <div class="stat-card card">
+                <div class="stat-value" id="stat-abandons">0</div>
+                <div class="stat-label">Abandons</div>
+            </div>
+        </div>
+
+        <!-- Detailed Stats -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="20" height="20">
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                    </svg>
+                    Statistiques détaillées
+                </h3>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div>
+                    <p class="text-muted mb-1">Parties avec les Blancs</p>
+                    <p><strong id="games-white">0</strong> parties • <span id="wins-white">0</span> victoires</p>
+                </div>
+                <div>
+                    <p class="text-muted mb-1">Parties avec les Noirs</p>
+                    <p><strong id="games-black">0</strong> parties • <span id="wins-black">0</span> victoires</p>
+                </div>
+                <div>
+                    <p class="text-muted mb-1">Série actuelle</p>
+                    <p id="current-streak">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs mb-3">
+            <button class="auth-tab active" onclick="switchProfileTab('publications')">Publications</button>
+            <button class="auth-tab" onclick="switchProfileTab('games')">Historique</button>
+        </div>
+
+        <!-- Publications Section -->
+        <div class="publications-section" id="publications-tab">
+            <div id="publications-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games History Section -->
+        <div class="publications-section hidden" id="games-tab">
+            <div id="games-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            <div class="text-center mt-3" id="games-pagination"></div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="edit-profile-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Modifier le profil</h3>
+                <button class="modal-close" onclick="closeModal('edit-profile-modal')">&times;</button>
+            </div>
+            <form onsubmit="updateProfile(event)">
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" id="edit-bio" placeholder="Parlez-nous de vous..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/icons.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let profileUserId = null;
+        let isOwnProfile = false;
+        let currentPage = 1;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize icons
+            document.getElementById('logo-icon').innerHTML = Icons.chessPawn;
+            document.getElementById('icon-home').innerHTML = Icons.home;
+            document.getElementById('icon-users').innerHTML = Icons.users;
+            document.getElementById('icon-profile').innerHTML = Icons.user;
+
+            await initApp();
+
+            // Obtenir l'ID du profil à afficher
+            const params = new URLSearchParams(window.location.search);
+            profileUserId = params.get('id');
+
+            if (!profileUserId && currentUser) {
+                profileUserId = currentUser.id;
+            }
+
+            if (!profileUserId) {
+                showToast('Connectez-vous pour voir votre profil', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'auth.html?redirect=profile.html';
+                }, 2000);
+                return;
+            }
+
+            isOwnProfile = currentUser && currentUser.id == profileUserId;
+
+            await loadProfile();
+            await loadStats();
+            await loadPublications();
+        });
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(`api/profile.php?action=get&user_id=${profileUserId}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    showToast(data.error || 'Profil non trouvé', 'error');
+                    return;
+                }
+
+                const user = data.user;
+
+                // Mettre à jour l'interface
+                document.getElementById('profile-avatar').src =
+                    `uploads/profiles/${user.profile_photo || 'default.png'}`;
+                document.getElementById('profile-name').textContent = user.username;
+                document.getElementById('profile-bio').textContent = user.bio || 'Aucune bio';
+                document.getElementById('member-since').textContent =
+                    new Date(user.created_at).toLocaleDateString('fr-FR');
+                document.getElementById('total-games').textContent = user.total_games;
+                document.getElementById('win-rate').textContent = user.win_rate;
+
+                // Stats principales
+                document.getElementById('stat-wins').textContent = user.wins;
+                document.getElementById('stat-losses').textContent = user.losses;
+                document.getElementById('stat-draws').textContent = user.draws;
+                document.getElementById('stat-abandons').textContent = user.abandons;
+
+                // Actions selon le profil
+                const actionsContainer = document.getElementById('profile-actions');
+                if (isOwnProfile) {
+                    document.getElementById('edit-photo-btn').style.display = 'flex';
+                    actionsContainer.innerHTML = `
+                        <button class="btn btn-secondary btn-sm" onclick="openModal('edit-profile-modal')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Modifier le profil
+                        </button>
+                    `;
+                    document.getElementById('edit-bio').value = user.bio || '';
+                } else {
+                    actionsContainer.innerHTML = `
+                        <button class="btn btn-primary btn-sm" onclick="inviteUser(${user.id}, '${user.username}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
+                            Inviter à jouer
+                        </button>
+                        <a href="users.html" class="btn btn-secondary btn-sm">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            Envoyer un message
+                        </a>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('Erreur de chargement', 'error');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`api/profile.php?action=stats&user_id=${profileUserId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('games-white').textContent = stats.games_as_white;
+                    document.getElementById('games-black').textContent = stats.games_as_black;
+                    document.getElementById('wins-white').textContent = stats.wins_as_white;
+                    document.getElementById('wins-black').textContent = stats.wins_as_black;
+
+                    if (stats.current_streak > 0) {
+                        const streakIcon = stats.streak_type === 'win'
+                            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align: middle; color: var(--warning);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
+                            : stats.streak_type === 'loss'
+                                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align: middle; color: var(--info);"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path><path d="M9 15h.01"></path><path d="M15 15h.01"></path></svg>'
+                                : '';
+                        const streakText = stats.streak_type === 'win' ? 'victoires' :
+                            stats.streak_type === 'loss' ? 'défaites' : 'nuls';
+                        document.getElementById('current-streak').innerHTML =
+                            `${streakIcon} ${stats.current_streak} ${streakText} consécutives`;
+                    } else {
+                        document.getElementById('current-streak').textContent = 'Aucune série';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadPublications() {
+            try {
+                const response = await fetch(`api/profile.php?action=publications&user_id=${profileUserId}`);
+                const data = await response.json();
+
+                const container = document.getElementById('publications-list');
+
+                if (data.success && data.publications.length > 0) {
+                    container.innerHTML = data.publications.map(pub => `
+                        <div class="publication-card card">
+                            <div class="publication-header">
+                                <img src="uploads/profiles/${currentUser?.profile_photo || 'default.png'}" 
+                                     alt="Photo" class="publication-avatar">
+                                <div>
+                                    <div class="publication-user">${document.getElementById('profile-name').textContent}</div>
+                                    <div class="publication-time">${formatDate(pub.created_at)}</div>
+                                </div>
+                            </div>
+                            <div class="publication-content">${pub.content}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </div>
+                            <p>Aucune publication pour l'instant</p>
+                            <p class="text-muted">Les résultats des parties apparaîtront ici</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading publications:', error);
+            }
+        }
+
+        async function loadGamesHistory(page = 1) {
+            currentPage = page;
+
+            try {
+                const response = await fetch(
+                    `api/profile.php?action=games&user_id=${profileUserId}&page=${page}`
+                );
+                const data = await response.json();
+
+                const container = document.getElementById('games-list');
+                const pagination = document.getElementById('games-pagination');
+
+                if (data.success && data.games.length > 0) {
+                    container.innerHTML = data.games.map(game => {
+                        let resultClass = '';
+                        let resultIcon = '';
+                        let resultText = '';
+
+                        if (game.result === 'win') {
+                            resultClass = 'color: var(--success)';
+                            resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+                            resultText = 'Victoire';
+                        } else if (game.result === 'loss') {
+                            resultClass = 'color: var(--danger)';
+                            resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+                            resultText = 'Défaite';
+                        } else if (game.result === 'draw') {
+                            resultClass = 'color: var(--warning)';
+                            resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+                            resultText = 'Nul';
+                        } else {
+                            if (game.status === 'active') {
+                                resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>';
+                                resultText = 'En cours';
+                            } else if (game.status === 'paused') {
+                                resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+                                resultText = 'En pause';
+                            } else {
+                                resultText = game.status;
+                            }
+                        }
+
+                        const opponent = game.white_player_id == profileUserId
+                            ? game.black_username : game.white_username;
+                        const myColor = game.white_player_id == profileUserId
+                            ? '<span class="piece-color white"></span>'
+                            : '<span class="piece-color black"></span>';
+
+                        return `
+                            <div class="card mb-2" style="cursor: pointer;" 
+                                 onclick="viewGame(${game.id})">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p><strong>${myColor} vs ${opponent || 'Ordinateur'}</strong></p>
+                                        <p class="text-muted">${formatDate(game.created_at)}</p>
+                                    </div>
+                                    <span style="${resultClass}; font-weight: 600; display: flex; align-items: center; gap: 4px;">${resultIcon} ${resultText}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Pagination
+                    if (data.pages > 1) {
+                        let paginationHtml = '';
+                        for (let i = 1; i <= data.pages; i++) {
+                            paginationHtml += `
+                                <button class="btn ${i === page ? 'btn-primary' : 'btn-secondary'} btn-sm" 
+                                        onclick="loadGamesHistory(${i})">${i}</button>
+                            `;
+                        }
+                        pagination.innerHTML = paginationHtml;
+                    } else {
+                        pagination.innerHTML = '';
+                    }
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
+                            </div>
+                            <p>Aucune partie jouée</p>
+                        </div>
+                    `;
+                    pagination.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error loading games:', error);
+            }
+        }
+
+        function switchProfileTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+
+            if (tab === 'publications') {
+                document.querySelector('.auth-tab:first-child').classList.add('active');
+                document.getElementById('publications-tab').classList.remove('hidden');
+                document.getElementById('games-tab').classList.add('hidden');
+            } else {
+                document.querySelector('.auth-tab:last-child').classList.add('active');
+                document.getElementById('publications-tab').classList.add('hidden');
+                document.getElementById('games-tab').classList.remove('hidden');
+                loadGamesHistory();
+            }
+        }
+
+        async function uploadPhoto(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const formData = new FormData();
+            formData.append('photo', input.files[0]);
+
+            try {
+                const response = await fetch('api/profile.php?action=upload_photo', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('profile-avatar').src =
+                        `uploads/profiles/${data.profile_photo}`;
+                    showToast('Photo mise à jour!', 'success');
+
+                    // Mettre à jour le localStorage
+                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    user.profile_photo = data.profile_photo;
+                    localStorage.setItem('user', JSON.stringify(user));
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur d\'upload', 'error');
+            }
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+
+            const bio = document.getElementById('edit-bio').value;
+
+            try {
+                const response = await fetch('api/profile.php?action=update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bio: bio })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('profile-bio').textContent = bio || 'Aucune bio';
+                    closeModal('edit-profile-modal');
+                    showToast('Profil mis à jour!', 'success');
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur de mise à jour', 'error');
+            }
+        }
+
+        async function inviteUser(userId, username) {
+            try {
+                const response = await fetch('api/users.php?action=invite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receiver_id: userId })
+                });
+
+                const data = await response.json();
+                showToast(data.message || data.error, data.success ? 'success' : 'error');
+            } catch (error) {
+                showToast('Erreur d\'envoi', 'error');
+            }
+        }
+
+        function viewGame(gameId) {
+            window.location.href = `game.html?id=${gameId}`;
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'À l\'instant';
+            if (diffMins < 60) return `Il y a ${diffMins} min`;
+            if (diffHours < 24) return `Il y a ${diffHours}h`;
+            if (diffDays === 1) return 'Hier';
+            if (diffDays < 7) return `Il y a ${diffDays} jours`;
+            return date.toLocaleDateString('fr-FR');
+        }
+    </script>
+
+    <style>
+        /* Navigation icons */
+        .nav-icon {
+            display: inline-flex;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Logo icon */
+        .logo-icon {
+            display: inline-flex;
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--primary);
+        }
+
+        /* Card title icon */
+        .card-icon {
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* Meta icons */
+        .meta-icon {
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        /* Empty icon */
+        .empty-icon {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Piece color indicators */
+        .piece-color {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .piece-color.white {
+            background: #fff;
+            border: 1px solid #333;
+        }
+
+        .piece-color.black {
+            background: #333;
+            border: 1px solid #fff;
+        }
+    </style>
+</body>
+
+</html>
