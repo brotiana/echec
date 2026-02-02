@@ -199,8 +199,39 @@
             document.getElementById('icon-profile').innerHTML = Icons.user;
 
             await initApp();
+
+            // Vérifier s'il y a une partie active
+            if (currentUser) {
+                checkActiveGame();
+            }
+
             loadPublicGames();
         });
+
+        async function checkActiveGame() {
+            try {
+                const response = await fetch('api/games.php?action=get_active_game');
+                const data = await response.json();
+
+                if (data.success && data.has_active_game) {
+                    const heroActions = document.querySelector('.hero-actions');
+                    const returnBtn = document.createElement('button');
+                    returnBtn.className = 'btn btn-success btn-lg';
+                    returnBtn.onclick = () => window.location.href = `game.html?id=${data.game_id}`;
+                    returnBtn.innerHTML = `
+                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        </svg>
+                        Retour en partie
+                    `;
+                    // Insérer au début ou à la fin
+                    heroActions.insertBefore(returnBtn, heroActions.firstChild);
+                }
+            } catch (error) {
+                console.error('Erreur vérification partie active', error);
+            }
+        }
 
         async function loadPublicGames() {
             const container = document.getElementById('public-games');
@@ -247,23 +278,6 @@
             } catch (error) {
                 container.innerHTML = '<p class="text-muted text-center">Erreur de chargement</p>';
             }
-        }
-
-        function playVsComputer() {
-            // Pas besoin d'être connecté
-            window.location.href = 'game.html?mode=computer';
-        }
-
-        function playOnline() {
-            if (!currentUser) {
-                openModal('login-modal');
-            } else {
-                window.location.href = 'users.html';
-            }
-        }
-
-        function watchGame(gameId) {
-            window.location.href = `game.html?id=${gameId}&spectator=true`;
         }
 
         // Rafraîchir les parties publiques toutes les 30 secondes

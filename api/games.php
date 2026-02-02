@@ -37,6 +37,12 @@ switch ($action) {
     case 'my_games':
         getMyGames();
         break;
+    case 'join_spectator':
+        joinSpectator();
+        break;
+    case 'get_active_game':
+        getActiveGame();
+        break;
     default:
         jsonResponse(['success' => false, 'error' => 'Action non valide'], 400);
 }
@@ -598,6 +604,94 @@ function resumeGame() {
         'success' => true,
         'message' => 'Partie reprise'
     ]);
+}
+
+/**
+ * Rejoindre une partie en tant que spectateur
+ */
+function joinSpectator() {
+    $pdo = getDbConnection();
+    $userId = requireAuth();
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $gameId = $input['game_id'] ?? null;
+    
+    if (!$gameId) {
+        jsonResponse(['success' => false, 'error' => 'ID de partie requis'], 400);
+    }
+    
+    // Vérifier si la partie est publique
+    $stmt = $pdo->prepare("SELECT is_public, white_player_id, black_player_id FROM games WHERE id = ?");
+    $stmt->execute([$gameId]);
+    $game = $stmt->fetch();
+    
+    if (!$game) {
+        jsonResponse(['success' => false, 'error' => 'Partie non trouvée'], 404);
+    }
+    
+    if (!$game['is_public']) {
+        // Vérifier si l'utilisateur est déjà dans la partie (joueur)
+        if ($game['white_player_id'] == $userId || $game['black_player_id'] == $userId) {
+            // C'est un joueur, pas besoin d'être spectateur
+            jsonResponse(['success' => true]);
+        }
+        jsonResponse(['success' => false, 'error' => 'Cette partie est privée'], 403);
+    }
+    
+    // Si c'est un joueur, ne pas ajouter aux spectateurs
+    if ($game['white_player_id'] == $userId || $game['black_player_id'] == $userId) {
+        jsonResponse(['success' => true]);
+    }
+    
+    try {
+        // Ajouter aux spectateurs (IGNORE pour éviter erreur de duplication)
+        $stmt = $pdo->prepare("INSERT IGNORE INTO spectators (game_id, user_id) VALUES (?, ?)");
+        $stmt->execute([$gameId, $userId]);
+        
+        // Récupérer le nouveau compteur
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM spectators WHERE game_id = ?");
+        $stmt->execute([$gameId]);
+        $count = $stmt->fetchColumn();
+        
+        jsonResponse([
+            'success' => true,
+            'spectator_count' => $count
+        ]);
+    } catch (Exception $e) {
+        jsonResponse(['success' => false, 'error' => 'Erreur serveur'], 500);
+    }
+}
+
+/**
+ * Récupérer la partie active de l'utilisateur
+ */
+function getActiveGame() {
+    $pdo = getDbConnection();
+    $userId = requireAuth();
+    
+    // Chercher une partie active où l'utilisateur est joueur
+    $stmt = $pdo->prepare("
+        SELECT id FROM games 
+        WHERE (white_player_id = ? OR black_player_id = ?)
+        AND status IN ('active', 'waiting', 'paused')
+        ORDER BY updated_at DESC
+        LIMIT 1
+    ");
+    $stmt->execute([$userId, $userId]);
+    $game = $stmt->fetch();
+    
+    if ($game) {
+        jsonResponse([
+            'success' => true,
+            'has_active_game' => true,
+            'game_id' => $game['id']
+        ]);
+    } else {
+        jsonResponse([
+            'success' => true,
+            'has_active_game' => false
+        ]);
+    }
 }
 
 /**

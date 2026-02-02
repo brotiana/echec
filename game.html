@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/icons.css">
 </head>
 
-<body>
+<body class="game-page-body">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -161,18 +161,91 @@
 
                     <!-- Emoji Bar -->
                     <div class="emoji-bar">
-                        <button class="emoji-btn" onclick="sendEmojiRain('😊')" title="Sourire">😊</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('😂')" title="Rire">😂</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('🎉')" title="Fête">🎉</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('👏')" title="Applaudir">👏</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('🔥')" title="Feu">🔥</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('❤️')" title="Coeur">❤️</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('😢')" title="Triste">😢</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('🤔')" title="Penser">🤔</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('😎')" title="Cool">😎</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('🏆')" title="Trophée">🏆</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('💪')" title="Fort">💪</button>
-                        <button class="emoji-btn" onclick="sendEmojiRain('👍')" title="Pouce">👍</button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('smile')" title="Sourire">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('laugh')" title="Rire">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <path d="M9 9h.01M15 9h.01" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('party')" title="Fête">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('clap')" title="Applaudir">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('fire')" title="Feu">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22c4-2 6-7 6-11a6 6 0 0 0-12 0c0 4 2 9 6 11z" />
+                                <path d="M12 12v6" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('heart')" title="Coeur">
+                            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('sad')" title="Triste">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('think')" title="Penser">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('cool')" title="Cool">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <rect x="5" y="8" width="14" height="4" rx="2" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('trophy')" title="Trophée">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                                <path d="M4 22h16" />
+                                <path d="M10 22v-4h4v4" />
+                                <rect x="6" y="2" width="12" height="10" rx="2" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('strong')" title="Fort">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 4H6" />
+                                <path d="M8 4L6 20" />
+                                <path d="M16 4l2 16" />
+                                <path d="M6 12h12" />
+                            </svg>
+                        </button>
+                        <button class="emoji-btn" onclick="sendEmojiRain('thumbup')" title="Pouce">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+                                <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                            </svg>
+                        </button>
                     </div>
 
                     <div class="chat-input-area">
@@ -460,6 +533,21 @@
                         btn.classList.add('hidden');
                     });
                     showToast('Mode spectateur', 'info');
+
+                    // Rejoindre en tant que spectateur
+                    fetch('api/games.php?action=join_spectator', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ game_id: gameId })
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success && res.spectator_count) {
+                                document.getElementById('spectator-count').textContent = res.spectator_count;
+                            }
+                        });
                 }
 
                 // Gérer partie publique
@@ -775,10 +863,17 @@
                 setTimeout(() => {
                     const span = document.createElement('span');
                     span.className = 'falling-emoji';
-                    span.textContent = emoji;
+                    // Check if it's a keyword in Icons, otherwise use as text (should allow both for backward compat)
+                    if (Icons[emoji]) {
+                        span.innerHTML = Icons[emoji];
+                        span.classList.add('falling-icon'); // Class for styling SVG
+                    } else {
+                        span.textContent = emoji;
+                    }
                     span.style.left = Math.random() * 100 + '%';
                     span.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    span.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+                    span.style.width = (24 + Math.random() * 24) + 'px'; // Base size for SVG
+                    span.style.height = span.style.width;
                     container.appendChild(span);
 
                     setTimeout(() => span.remove(), 4000);
