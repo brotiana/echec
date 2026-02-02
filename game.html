@@ -532,6 +532,12 @@
                     document.querySelectorAll('.game-actions button').forEach(btn => {
                         btn.classList.add('hidden');
                     });
+                    // Cacher le bouton de chat aussi
+                    const chatBtn = document.querySelector('.chat-toggle-btn');
+                    if (chatBtn) chatBtn.classList.add('hidden');
+                    const mobileChatBtn = document.querySelector('.mobile-chat-btn');
+                    if (mobileChatBtn) mobileChatBtn.style.setProperty('display', 'none', 'important');
+
                     showToast('Mode spectateur', 'info');
 
                     // Rejoindre en tant que spectateur
@@ -548,6 +554,11 @@
                                 document.getElementById('spectator-count').textContent = res.spectator_count;
                             }
                         });
+                } else {
+                    // Start chat polling only if not spectator (or allow read-only?)
+                    // The user asked to remove message icon, so they probably can't chat at all.
+                    // We'll keep polling for messages to read them, but hide input.
+                    startChatPolling();
                 }
 
                 // Gérer partie publique
@@ -556,12 +567,75 @@
                         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                         Rendre privée`;
                     document.getElementById('spectators-panel').classList.remove('hidden');
-                    document.getElementById('spectator-count').textContent = data.spectator_count;
+                    // Spectator count is updated here initially
+                    if (data.spectator_count !== undefined) {
+                        document.getElementById('spectator-count').textContent = data.spectator_count;
+                    }
                 }
 
             } catch (error) {
                 showToast('Erreur de chargement', 'error');
                 console.error(error);
+            }
+        }
+
+        async function checkGameUpdates() {
+            if (!gameId || (isSpectator && currentGame.status === 'completed')) return;
+
+            try {
+                const response = await fetch(`api/games.php?action=get&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const newGame = data.game;
+
+                    // Update spectator count in real-time
+                    if (data.spectator_count !== undefined) {
+                        document.getElementById('spectator-count').textContent = data.spectator_count;
+                    }
+
+                    // Si l'état du plateau a changé
+                    if (newGame.board_state !== JSON.stringify(game.board)) {
+                        game.board = JSON.parse(newGame.board_state);
+                        // Pass new turn to updateBoardState to ensure sync
+                        updateBoardState(game.board, newGame.current_turn);
+                        updateMoveHistory(data.moves);
+
+                        // Jouer un son si nouveau coup (vérifier si last move id a changé)
+                        // ...
+                    }
+
+                    // Synchroniser le tour
+                    if (newGame.current_turn !== currentGame.current_turn) {
+                        updateTurnIndicator(newGame.current_turn);
+                    }
+
+                    // Gérer les status (pause, fin)
+                    if (newGame.status !== currentGame.status) {
+                        if (newGame.status === 'paused') {
+                            if (!isSpectator) openModal('pause-modal'); // Hide from spectators
+                        } else if (newGame.status === 'active' && currentGame.status === 'paused') {
+                            closeModal('pause-modal');
+                            showToast('Partie reprise', 'success');
+                        } else if (newGame.status === 'completed' || newGame.status === 'abandoned') {
+                            showGameResult();
+                        }
+                    }
+
+                    // Gérer les demandes de pause
+                    // Visible UNIQUMENT par l'adversaire (pas le demandeur, pas le spectateur)
+                    if (newGame.pause_status === 'pending' && !isSpectator) {
+                        if (newGame.pause_requester != currentUser.id) {
+                            document.getElementById('pause-request-modal').classList.remove('hidden');
+                        }
+                    } else {
+                        document.getElementById('pause-request-modal').classList.add('hidden');
+                    }
+
+                    currentGame = newGame;
+                }
+            } catch (error) {
+                console.error('Erreur polling:', error);
             }
         }
 

@@ -483,23 +483,27 @@ function requestPause() {
         jsonResponse(['success' => false, 'error' => 'Vous n\'êtes pas dans cette partie'], 403);
     }
     
-    // Vérifier s'il y a déjà une demande de pause en attente
+    // Vérifier s'il y a déjà une demande en attente
     $stmt = $pdo->prepare("SELECT id FROM pause_requests WHERE game_id = ? AND status = 'pending'");
     $stmt->execute([$gameId]);
     if ($stmt->fetch()) {
-        jsonResponse(['success' => false, 'error' => 'Une demande de pause est déjà en attente'], 400);
+        jsonResponse(['success' => false, 'error' => 'Une demande de pause est déjà en cours'], 400);
     }
     
-    // Créer la demande de pause
+    // Si pas de date fournie, défaut à +5 minutes (juste pour avoir une valeur)
+    if (!$resumeAt) {
+        $resumeAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+    }
+    
     $stmt = $pdo->prepare("
-        INSERT INTO pause_requests (game_id, requester_id, requested_resume_at, message) 
-        VALUES (?, ?, ?, ?)
+        INSERT INTO pause_requests (game_id, requester_id, requested_resume_at, message, status) 
+        VALUES (?, ?, ?, ?, 'pending')
     ");
     $stmt->execute([$gameId, $userId, $resumeAt, $message]);
     
     jsonResponse([
         'success' => true,
-        'message' => 'Demande de pause envoyée à votre adversaire'
+        'message' => 'Demande de pause envoyée'
     ]);
 }
 
