@@ -157,109 +157,127 @@ function getGame() {
  * Effectuer un coup
  */
 function makeMove() {
-    $pdo = getDbConnection();
-    $userId = getCurrentUser();
-    
-    $input = json_decode(file_get_contents('php://input'), true);
-    $gameId = $input['game_id'] ?? null;
-    $from = $input['from'] ?? null;
-    $to = $input['to'] ?? null;
-    $pieceType = $input['piece_type'] ?? null;
-    $newBoardState = $input['board_state'] ?? null;
-    $capturedPiece = $input['captured_piece'] ?? null;
-    $isCheck = $input['is_check'] ?? false;
-    $isCheckmate = $input['is_checkmate'] ?? false;
-    $isDraw = $input['is_draw'] ?? false;
-    $promotionPiece = $input['promotion_piece'] ?? null;
-    
-    if (!$gameId || !$from || !$to || !$newBoardState) {
-        jsonResponse(['success' => false, 'error' => 'Données manquantes'], 400);
-    }
-    
-    // Récupérer la partie
-    $stmt = $pdo->prepare("SELECT * FROM games WHERE id = ?");
-    $stmt->execute([$gameId]);
-    $game = $stmt->fetch();
-    
-    if (!$game) {
-        jsonResponse(['success' => false, 'error' => 'Partie non trouvée'], 404);
-    }
-    
-    if ($game['status'] !== 'active') {
-        jsonResponse(['success' => false, 'error' => 'Cette partie n\'est pas active'], 400);
-    }
-    
-    // Vérifier que c'est le tour du joueur (sauf vs ordinateur)
-    if (!$game['is_vs_computer']) {
-        $isWhitePlayer = $game['white_player_id'] == $userId;
-        $isBlackPlayer = $game['black_player_id'] == $userId;
+    try {
+        $pdo = getDbConnection();
+        $userId = getCurrentUser();
         
-        if (!$isWhitePlayer && !$isBlackPlayer) {
-            jsonResponse(['success' => false, 'error' => 'Vous n\'êtes pas dans cette partie'], 403);
+        $input = json_decode(file_get_contents('php://input'), true);
+        $gameId = $input['game_id'] ?? null;
+        $from = $input['from'] ?? null;
+        $to = $input['to'] ?? null;
+        $pieceType = $input['piece_type'] ?? null;
+        $newBoardState = $input['board_state'] ?? null;
+        $capturedPiece = $input['captured_piece'] ?? null;
+        // Convertir en entiers pour MySQL (les booléens ou chaînes vides causent des erreurs)
+        $isCheck = !empty($input['is_check']) ? 1 : 0;
+        $isCheckmate = !empty($input['is_checkmate']) ? 1 : 0;
+        $isDraw = !empty($input['is_draw']) ? 1 : 0;
+        $promotionPiece = $input['promotion_piece'] ?? null;
+        
+        if (!$gameId || !$from || !$to || !$newBoardState) {
+            jsonResponse(['success' => false, 'error' => 'Données manquantes'], 400);
         }
         
-        if (($game['current_turn'] === 'white' && !$isWhitePlayer) ||
-            ($game['current_turn'] === 'black' && !$isBlackPlayer)) {
-            jsonResponse(['success' => false, 'error' => 'Ce n\'est pas votre tour'], 400);
-        }
-    }
-    
-    // Compter le numéro du coup
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM moves WHERE game_id = ?");
-    $stmt->execute([$gameId]);
-    $moveNumber = $stmt->fetchColumn() + 1;
-    
-    // Créer la notation du coup
-    $moveNotation = $pieceType[0] . $from . '-' . $to;
-    if ($capturedPiece) $moveNotation .= 'x';
-    if ($isCheck) $moveNotation .= '+';
-    if ($isCheckmate) $moveNotation .= '#';
-    
-    // Enregistrer le coup
-    $stmt = $pdo->prepare("
-        INSERT INTO moves (game_id, player_id, move_notation, from_position, to_position, 
-                          piece_type, captured_piece, is_check, is_checkmate, move_number) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-    $stmt->execute([
-        $gameId, $userId, $moveNotation, $from, $to,
-        $pieceType, $capturedPiece, $isCheck, $isCheckmate, $moveNumber
-    ]);
-    
-    // Déterminer le nouveau tour
-    $nextTurn = $game['current_turn'] === 'white' ? 'black' : 'white';
-    
-    // Mettre à jour la partie
-    $newStatus = $game['status'];
-    $winnerId = null;
-    
-    if ($isCheckmate) {
-        $newStatus = 'completed';
-        $winnerId = $userId;
+        // Récupérer la partie
+        $stmt = $pdo->prepare("SELECT * FROM games WHERE id = ?");
+        $stmt->execute([$gameId]);
+        $game = $stmt->fetch();
         
-        // Mettre à jour les statistiques
-        updateGameStats($pdo, $game, $userId, 'checkmate');
-    } elseif ($isDraw) {
-        $newStatus = 'completed';
-        updateGameStats($pdo, $game, null, 'draw');
+        if (!$game) {
+            jsonResponse(['success' => false, 'error' => 'Partie non trouvée'], 404);
+        }
+        
+        if ($game['status'] !== 'active') {
+            jsonResponse(['success' => false, 'error' => 'Cette partie n\'est pas active'], 400);
+        }
+        
+        // Vérifier que c'est le tour du joueur (sauf vs ordinateur)
+        if (!$game['is_vs_computer']) {
+            $isWhitePlayer = $game['white_player_id'] == $userId;
+            $isBlackPlayer = $game['black_player_id'] == $userId;
+            
+            if (!$isWhitePlayer && !$isBlackPlayer) {
+                jsonResponse(['success' => false, 'error' => 'Vous n\'êtes pas dans cette partie'], 403);
+            }
+            
+            if (($game['current_turn'] === 'white' && !$isWhitePlayer) ||
+                ($game['current_turn'] === 'black' && !$isBlackPlayer)) {
+                jsonResponse(['success' => false, 'error' => 'Ce n\'est pas votre tour'], 400);
+            }
+        }
+        
+        // Compter le numéro du coup
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM moves WHERE game_id = ?");
+        $stmt->execute([$gameId]);
+        $moveNumber = $stmt->fetchColumn() + 1;
+        
+        // Extraire le type de pièce (ex: "white_pawn" -> "pawn", ou "pawn" -> "pawn")
+        $pieceTypeName = $pieceType;
+        if ($pieceType && strpos($pieceType, '_') !== false) {
+            $parts = explode('_', $pieceType);
+            $pieceTypeName = end($parts); // Prend la dernière partie (le type)
+        }
+        
+        // Créer la notation du coup (P=pawn, R=rook, N=knight, B=bishop, Q=queen, K=king)
+        $pieceNotations = [
+            'pawn' => 'P', 'rook' => 'R', 'knight' => 'N', 
+            'bishop' => 'B', 'queen' => 'Q', 'king' => 'K'
+        ];
+        $pieceChar = $pieceNotations[$pieceTypeName] ?? strtoupper(substr($pieceTypeName ?? 'P', 0, 1));
+        
+        $moveNotation = $pieceChar . $from . '-' . $to;
+        if ($capturedPiece) $moveNotation .= 'x';
+        if ($isCheck) $moveNotation .= '+';
+        if ($isCheckmate) $moveNotation .= '#';
+        
+        // Enregistrer le coup
+        $stmt = $pdo->prepare("
+            INSERT INTO moves (game_id, player_id, move_notation, from_position, to_position, 
+                              piece_type, captured_piece, is_check, is_checkmate, move_number) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $gameId, $userId, $moveNotation, $from, $to,
+            $pieceTypeName, $capturedPiece, $isCheck, $isCheckmate, $moveNumber
+        ]);
+    
+        // Déterminer le nouveau tour
+        $nextTurn = $game['current_turn'] === 'white' ? 'black' : 'white';
+        
+        // Mettre à jour la partie
+        $newStatus = $game['status'];
+        $winnerId = null;
+        
+        if ($isCheckmate) {
+            $newStatus = 'completed';
+            $winnerId = $userId;
+            
+            // Mettre à jour les statistiques
+            updateGameStats($pdo, $game, $userId, 'checkmate');
+        } elseif ($isDraw) {
+            $newStatus = 'completed';
+            updateGameStats($pdo, $game, null, 'draw');
+        }
+        
+        $stmt = $pdo->prepare("
+            UPDATE games 
+            SET board_state = ?, current_turn = ?, status = ?, winner_id = ?, 
+                completed_at = IF(? = 'completed', NOW(), NULL)
+            WHERE id = ?
+        ");
+        $stmt->execute([$newBoardState, $nextTurn, $newStatus, $winnerId, $newStatus, $gameId]);
+        
+        jsonResponse([
+            'success' => true,
+            'move_number' => $moveNumber,
+            'next_turn' => $nextTurn,
+            'status' => $newStatus,
+            'is_checkmate' => $isCheckmate,
+            'is_draw' => $isDraw
+        ]);
+    } catch (Exception $e) {
+        jsonResponse(['success' => false, 'error' => 'Erreur serveur: ' . $e->getMessage()], 500);
     }
-    
-    $stmt = $pdo->prepare("
-        UPDATE games 
-        SET board_state = ?, current_turn = ?, status = ?, winner_id = ?, 
-            completed_at = IF(? = 'completed', NOW(), NULL)
-        WHERE id = ?
-    ");
-    $stmt->execute([$newBoardState, $nextTurn, $newStatus, $winnerId, $newStatus, $gameId]);
-    
-    jsonResponse([
-        'success' => true,
-        'move_number' => $moveNumber,
-        'next_turn' => $nextTurn,
-        'status' => $newStatus,
-        'is_checkmate' => $isCheckmate,
-        'is_draw' => $isDraw
-    ]);
 }
 
 /**

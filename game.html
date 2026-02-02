@@ -425,7 +425,7 @@
 
                 // Charger l'état du plateau
                 const boardState = JSON.parse(currentGame.board_state);
-                initChessBoard(boardState);
+                initChessBoard(boardState, currentGame.current_turn);
                 updateTurnIndicator(currentGame.current_turn);
 
                 // Vérifier si la partie est en pause
@@ -545,7 +545,7 @@
                     // Vérifier si le plateau a changé
                     if (newGame.board_state !== currentGame?.board_state) {
                         const boardState = JSON.parse(newGame.board_state);
-                        updateBoardState(boardState);
+                        updateBoardState(boardState, newGame.current_turn);
                         updateTurnIndicator(newGame.current_turn);
                         updateMoveHistory(data.moves);
                     }

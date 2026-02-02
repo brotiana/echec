@@ -38,9 +38,9 @@ class ChessGame {
     };
 
     // Initialiser le plateau
-    init(boardState = null) {
+    init(boardState = null, currentTurn = 'white') {
         this.board = boardState ? { ...boardState } : { ...ChessGame.INITIAL_POSITION };
-        this.currentTurn = 'white';
+        this.currentTurn = currentTurn;
         this.selectedPiece = null;
         this.validMoves = [];
         this.lastMove = null;
@@ -86,15 +86,26 @@ class ChessGame {
         if (!boardElement) return;
 
         boardElement.innerHTML = '';
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+        // Inverser l'ordre si le joueur est noir (ses pièces en bas)
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        let ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+        if (this.playerColor === 'black') {
+            files = files.slice().reverse();  // h, g, f, e, d, c, b, a
+            ranks = ranks.slice().reverse();  // 1, 2, 3, 4, 5, 6, 7, 8
+        }
 
         for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
             for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
                 const file = files[fileIndex];
                 const rank = ranks[rankIndex];
                 const position = file + rank;
-                const isLight = (rankIndex + fileIndex) % 2 === 0;
+
+                // Calculer la couleur de la case basée sur la position originale
+                const originalFileIndex = file.charCodeAt(0) - 97; // a=0, h=7
+                const originalRankIndex = parseInt(rank) - 1; // 1=0, 8=7
+                const isLight = (originalFileIndex + originalRankIndex) % 2 === 1;
 
                 const square = document.createElement('div');
                 square.className = `chess-square ${isLight ? 'light' : 'dark'}`;
@@ -645,8 +656,11 @@ class ChessGame {
     }
 
     // Mettre à jour l'état du plateau (pour la synchronisation en ligne)
-    updateBoardState(newState) {
+    updateBoardState(newState, newTurn = null) {
         this.board = { ...newState };
+        if (newTurn) {
+            this.currentTurn = newTurn;
+        }
         this.renderBoard();
     }
 
@@ -720,11 +734,11 @@ class ChessGame {
 let chess = new ChessGame();
 
 // Fonctions globales pour l'interface
-function initChessBoard(boardState = null) {
-    chess.init(boardState);
+function initChessBoard(boardState = null, currentTurn = 'white') {
+    chess.init(boardState, currentTurn);
     chess.moveCallback = typeof onMoveComplete === 'function' ? onMoveComplete : null;
 }
 
-function updateBoardState(boardState) {
-    chess.updateBoardState(boardState);
+function updateBoardState(boardState, currentTurn = null) {
+    chess.updateBoardState(boardState, currentTurn);
 }
