@@ -150,8 +150,15 @@ function uploadPhoto() {
     $newFilename = 'user_' . $userId . '_' . time() . '.' . $extension;
     $destination = PROFILE_PHOTOS_DIR . $newFilename;
     
+    // Verifier l'existence du dossier (j'essaie de le créer si besoin)
+    if (!is_dir(PROFILE_PHOTOS_DIR)) {
+        @mkdir(PROFILE_PHOTOS_DIR, 0777, true);
+    }
+
     if (!move_uploaded_file($file['tmp_name'], $destination)) {
-        jsonResponse(['success' => false, 'error' => 'Erreur lors de l\'upload'], 500);
+        $error = error_get_last();
+        error_log("Upload failed: " . ($error['message'] ?? 'Unknown error'));
+        jsonResponse(['success' => false, 'error' => 'Erreur lors du déplacement du fichier'], 500);
     }
     
     // Supprimer l'ancienne photo (sauf si c'est default.png)

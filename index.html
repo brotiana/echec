@@ -214,23 +214,49 @@
                 const data = await response.json();
 
                 if (data.success && data.has_active_game) {
-                    const heroActions = document.querySelector('.hero-actions');
-                    const returnBtn = document.createElement('button');
-                    returnBtn.className = 'btn btn-success btn-lg';
-                    returnBtn.onclick = () => window.location.href = `game.html?id=${data.game_id}`;
-                    returnBtn.innerHTML = `
-                        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
-                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
-                        </svg>
-                        Retour en partie
-                    `;
-                    // Insérer au début ou à la fin
-                    heroActions.insertBefore(returnBtn, heroActions.firstChild);
+                    addReturnButton(data.game_id);
                 }
             } catch (error) {
                 console.error('Erreur vérification partie active', error);
             }
+        }
+
+        function updateHeroAction(activeGames) {
+            // Filtrer pour trouver une partie active
+            const activeGame = activeGames.find(g =>
+                ['active', 'paused', 'waiting'].includes(g.status)
+            );
+
+            if (activeGame) {
+                // S'assurer que le bouton existe
+                addReturnButton(activeGame.id);
+            } else {
+                // Supprimer le bouton s'il existe (partie finie ou abandonnée)
+                const returnBtn = document.getElementById('return-game-btn');
+                if (returnBtn) {
+                    returnBtn.remove();
+                }
+            }
+        }
+
+        function addReturnButton(gameId) {
+            const heroActions = document.querySelector('.hero-actions');
+            // Vérifier si le bouton existe déjà
+            if (document.getElementById('return-game-btn')) return;
+
+            const returnBtn = document.createElement('button');
+            returnBtn.id = 'return-game-btn';
+            returnBtn.className = 'btn btn-success btn-lg';
+            returnBtn.onclick = () => window.location.href = `game.html?id=${gameId}`;
+            returnBtn.innerHTML = `
+                <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                </svg>
+                Retour en partie
+            `;
+            // Insérer au début
+            heroActions.insertBefore(returnBtn, heroActions.firstChild);
         }
 
         async function loadPublicGames() {
@@ -278,6 +304,25 @@
             } catch (error) {
                 container.innerHTML = '<p class="text-muted text-center">Erreur de chargement</p>';
             }
+        }
+
+        // Jouer contre l'ordinateur
+        function playVsComputer() {
+            window.location.href = 'game.html?mode=computer';
+        }
+
+        // Jouer en ligne - redirige vers la liste des joueurs
+        function playOnline() {
+            if (!currentUser) {
+                openModal('login-modal');
+                return;
+            }
+            window.location.href = 'users.html';
+        }
+
+        // Regarder une partie publique
+        function watchGame(gameId) {
+            window.location.href = `game.html?id=${gameId}&spectator=true`;
         }
 
         // Rafraîchir les parties publiques toutes les 30 secondes

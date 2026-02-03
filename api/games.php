@@ -332,9 +332,9 @@ function createGamePublication($pdo, $gameId, $userId, $opponentId, $type) {
     $opponentName = $opponent ? $opponent['username'] : 'un adversaire';
     
     $messages = [
-        'victory' => "🏆 Victoire ! J'ai gagné contre $opponentName aux échecs !",
-        'defeat' => "Défaite contre $opponentName aux échecs. La prochaine fois...",
-        'draw' => "🤝 Match nul avec $opponentName aux échecs !"
+        'victory' => "🏆 Victoire contre $opponentName",
+        'defeat' => "Défaite contre $opponentName",
+        'draw' => "🤝 Match nul avec $opponentName"
     ];
     
     $stmt = $pdo->prepare("
@@ -483,27 +483,23 @@ function requestPause() {
         jsonResponse(['success' => false, 'error' => 'Vous n\'êtes pas dans cette partie'], 403);
     }
     
-    // Vérifier s'il y a déjà une demande en attente
+    // Vérifier s'il y a déjà une demande de pause en attente
     $stmt = $pdo->prepare("SELECT id FROM pause_requests WHERE game_id = ? AND status = 'pending'");
     $stmt->execute([$gameId]);
     if ($stmt->fetch()) {
-        jsonResponse(['success' => false, 'error' => 'Une demande de pause est déjà en cours'], 400);
+        jsonResponse(['success' => false, 'error' => 'Une demande de pause est déjà en attente'], 400);
     }
     
-    // Si pas de date fournie, défaut à +5 minutes (juste pour avoir une valeur)
-    if (!$resumeAt) {
-        $resumeAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
-    }
-    
+    // Créer la demande de pause
     $stmt = $pdo->prepare("
-        INSERT INTO pause_requests (game_id, requester_id, requested_resume_at, message, status) 
-        VALUES (?, ?, ?, ?, 'pending')
+        INSERT INTO pause_requests (game_id, requester_id, requested_resume_at, message) 
+        VALUES (?, ?, ?, ?)
     ");
     $stmt->execute([$gameId, $userId, $resumeAt, $message]);
     
     jsonResponse([
         'success' => true,
-        'message' => 'Demande de pause envoyée'
+        'message' => 'Demande de pause envoyée à votre adversaire'
     ]);
 }
 

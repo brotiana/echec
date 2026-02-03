@@ -185,10 +185,10 @@ function showToast(message, type = 'info') {
     if (!container) return;
 
     const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
+        success: '🟦',
+        error: '🟦',
+        warning: '🟦',
+        info: '🟦'
     };
 
     const toast = document.createElement('div');
@@ -312,14 +312,37 @@ document.addEventListener('click', () => { lastActivity = Date.now(); });
 document.addEventListener('scroll', () => { lastActivity = Date.now(); });
 
 // Mettre à jour le statut en ligne périodiquement
+// Mettre à jour le statut en ligne et vérifier les invitations périodiquement
 if (currentUser) {
-    setInterval(() => {
+    setInterval(async () => {
         // Si inactif depuis plus de 5 minutes, ne pas faire de requête
         if (Date.now() - lastActivity > 5 * 60 * 1000) return;
 
-        fetch('check_session.php').catch(() => { });
-    }, 60000); // Toutes les minutes
+        try {
+            const response = await fetch('check_session.php');
+            const data = await response.json();
+
+            if (data.authenticated) {
+                // Mettre à jour les invitations
+                if (data.pending_invitations) {
+                    showPendingInvitations(data.pending_invitations);
+                }
+
+                // Sur la page d'accueil, mettre à jour le bouton "Retour en partie"
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+                    if (typeof updateHeroAction === 'function') {
+                        updateHeroAction(data.active_games);
+                    }
+                }
+            } else if (data.error === 'Non connecté' && currentUser) {
+                logout(false);
+            }
+        } catch (error) {
+            console.error('Session check error', error);
+        }
+    }, 5000); // Toutes les 5 secondes
 }
+
 
 // Gestion de la fermeture de page - ne pas déconnecter lors de la navigation
 // Le logout se fait uniquement via le bouton "Déconnexion"

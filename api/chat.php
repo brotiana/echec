@@ -48,21 +48,6 @@ function sendMessage() {
     if (!$receiverId && !$gameId) {
         jsonResponse(['success' => false, 'error' => 'Destinataire ou partie requis'], 400);
     }
-
-    // Si c'est un message de partie, vérifier que l'utilisateur est un joueur
-    if ($gameId) {
-        $stmt = $pdo->prepare("SELECT white_player_id, black_player_id FROM games WHERE id = ?");
-        $stmt->execute([$gameId]);
-        $game = $stmt->fetch();
-
-        if (!$game) {
-            jsonResponse(['success' => false, 'error' => 'Partie non trouvée'], 404);
-        }
-
-        if ($game['white_player_id'] != $userId && $game['black_player_id'] != $userId) {
-            jsonResponse(['success' => false, 'error' => 'Seuls les joueurs peuvent discuter'], 403);
-        }
-    }
     
     $stmt = $pdo->prepare("
         INSERT INTO messages (sender_id, receiver_id, game_id, content) 

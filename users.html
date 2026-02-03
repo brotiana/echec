@@ -108,8 +108,16 @@
             <!-- Conversation Panel -->
             <div class="conversation-panel" id="conversation-panel">
                 <div class="conversation-header" id="conversation-header" style="display: none;">
+                    <button class="btn btn-ghost btn-sm mobile-only" onclick="closeConversationPanel()"
+                        style="margin-right: auto; padding: 4px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                            height="20">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                     <img src="uploads/profiles/default.png" alt="User" class="user-avatar" id="conv-avatar">
-                    <div>
+                    <div style="flex: 1;">
                         <div class="user-name" id="conv-username">Sélectionnez un utilisateur</div>
                         <div class="user-status">
                             <span class="status-dot" id="conv-status-dot"></span>
@@ -391,8 +399,18 @@
             lastPrivateMessageId = 0;
 
             // Mettre à jour l'en-tête
-            document.getElementById('conversation-header').style.display = 'flex';
-            document.getElementById('conv-input-area').style.display = 'flex';
+            const panel = document.getElementById('conversation-panel');
+            const header = document.getElementById('conversation-header');
+            const inputArea = document.getElementById('conv-input-area');
+
+            // Show panel on mobile
+            if (window.innerWidth <= 1024) {
+                panel.style.display = 'flex';
+            }
+
+            header.style.display = 'flex';
+            inputArea.style.display = 'flex';
+
             document.getElementById('conv-avatar').src = `uploads/profiles/${photo}`;
             document.getElementById('conv-username').textContent = username;
             document.getElementById('conv-status-dot').className = `status-dot ${isOnline ? 'online' : ''}`;
@@ -407,6 +425,19 @@
                 clearInterval(privateMessageInterval);
             }
             privateMessageInterval = setInterval(loadPrivateMessages, 3000);
+        }
+
+        function closeConversationPanel() {
+            selectedUserId = null;
+            const panel = document.getElementById('conversation-panel');
+            if (window.innerWidth <= 1024) {
+                panel.style.display = 'none';
+            }
+
+            if (privateMessageInterval) {
+                clearInterval(privateMessageInterval);
+                privateMessageInterval = null;
+            }
         }
 
         async function loadPrivateMessages() {
