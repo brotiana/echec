@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <!-- Navigation -->
+    
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo">
@@ -38,10 +38,10 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    
     <div class="container">
         <div class="users-container">
-            <!-- Users List -->
+            
             <div>
                 <div class="card mb-3">
                     <div class="card-header">
@@ -58,6 +58,22 @@
                         placeholder="Rechercher par nom d'utilisateur..." oninput="searchUsers(this.value)">
                 </div>
 
+
+                
+                <div class="card mt-3" id="received-invitations-card" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" width="20" height="20">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Invitations reçues
+                        </h3>
+                    </div>
+                    <div id="received-invitations"></div>
+                </div>
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -73,7 +89,7 @@
                     </div>
                 </div>
 
-                <!-- Mes invitations envoyées -->
+                
                 <div class="card mt-3" id="sent-invitations-card" style="display: none;">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -88,24 +104,9 @@
                     <div id="sent-invitations"></div>
                 </div>
 
-                <!-- Mes invitations reçues -->
-                <div class="card mt-3" id="received-invitations-card" style="display: none;">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" width="20" height="20">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            Invitations reçues
-                        </h3>
-                    </div>
-                    <div id="received-invitations"></div>
-                </div>
             </div>
 
-            <!-- Conversation Panel -->
+            
             <div class="conversation-panel" id="conversation-panel">
                 <div class="conversation-header" id="conversation-header" style="display: none;">
                     <button class="btn btn-ghost btn-sm mobile-only" onclick="closeConversationPanel()"
@@ -166,10 +167,10 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
+    
     <div class="toast-container" id="toast-container"></div>
 
-    <!-- Invitations Panel -->
+    
     <div class="invitations-panel" id="invitations-panel"></div>
 
     <script src="js/icons.js"></script>

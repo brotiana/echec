@@ -1,7 +1,4 @@
-/**
- * Chess Game Logic
- * Gestion complète du jeu d'échecs avec toutes les règles
- */
+ 
 
 class ChessGame {
     constructor() {
@@ -21,11 +18,11 @@ class ChessGame {
         this.enPassantTarget = null;
         this.halfMoveClock = 0;
         this.moveCallback = null;
-        this.isAIMoving = false; // Flag pour empêcher la boucle infinie
-        this.playerColor = 'white'; // Couleur du joueur humain
+        this.isAIMoving = false;  
+        this.playerColor = 'white';  
     }
 
-    // Position initiale
+     
     static INITIAL_POSITION = {
         'a8': 'black_rook', 'b8': 'black_knight', 'c8': 'black_bishop', 'd8': 'black_queen',
         'e8': 'black_king', 'f8': 'black_bishop', 'g8': 'black_knight', 'h8': 'black_rook',
@@ -37,7 +34,7 @@ class ChessGame {
         'e1': 'white_king', 'f1': 'white_bishop', 'g1': 'white_knight', 'h1': 'white_rook'
     };
 
-    // Initialiser le plateau
+     
     init(boardState = null, currentTurn = 'white') {
         this.board = boardState ? { ...boardState } : { ...ChessGame.INITIAL_POSITION };
         this.currentTurn = currentTurn;
@@ -56,12 +53,12 @@ class ChessGame {
         this.renderBoard();
     }
 
-    // Définir la couleur du joueur
+     
     setPlayerColor(color) {
         this.playerColor = color;
     }
 
-    // Obtenir l'image SVG d'une pièce
+     
     getPieceImage(piece) {
         const color = this.getPieceColor(piece);
         const type = this.getPieceType(piece);
@@ -80,20 +77,20 @@ class ChessGame {
         return pieces[type] || '';
     }
 
-    // Rendre le plateau
+     
     renderBoard() {
         const boardElement = document.getElementById('chess-board');
         if (!boardElement) return;
 
         boardElement.innerHTML = '';
 
-        // Inverser l'ordre si le joueur est noir (ses pièces en bas)
+         
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         let ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
         if (this.playerColor === 'black') {
-            files = files.slice().reverse();  // h, g, f, e, d, c, b, a
-            ranks = ranks.slice().reverse();  // 1, 2, 3, 4, 5, 6, 7, 8
+            files = files.slice().reverse();   
+            ranks = ranks.slice().reverse();   
         }
 
         for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
@@ -102,9 +99,9 @@ class ChessGame {
                 const rank = ranks[rankIndex];
                 const position = file + rank;
 
-                // Calculer la couleur de la case basée sur la position originale
-                const originalFileIndex = file.charCodeAt(0) - 97; // a=0, h=7
-                const originalRankIndex = parseInt(rank) - 1; // 1=0, 8=7
+                 
+                const originalFileIndex = file.charCodeAt(0) - 97;  
+                const originalRankIndex = parseInt(rank) - 1;  
                 const isLight = (originalFileIndex + originalRankIndex) % 2 === 1;
 
                 const square = document.createElement('div');
@@ -112,7 +109,7 @@ class ChessGame {
                 square.dataset.position = position;
                 square.onclick = () => this.handleSquareClick(position);
 
-                // Ajouter coordonnées
+                 
                 if (fileIndex === 0) {
                     const coord = document.createElement('span');
                     coord.className = 'board-coords coord-number';
@@ -126,7 +123,7 @@ class ChessGame {
                     square.appendChild(coord);
                 }
 
-                // Ajouter la pièce
+                 
                 const piece = this.board[position];
                 if (piece) {
                     const pieceDiv = document.createElement('div');
@@ -135,12 +132,12 @@ class ChessGame {
                     square.appendChild(pieceDiv);
                 }
 
-                // Marquer le dernier coup
+                 
                 if (this.lastMove && (position === this.lastMove.from || position === this.lastMove.to)) {
                     square.classList.add('last-move');
                 }
 
-                // Marquer l'échec
+                 
                 if (this.isCheck && piece && piece.includes('king') &&
                     piece.startsWith(this.currentTurn)) {
                     square.classList.add('check');
@@ -151,23 +148,23 @@ class ChessGame {
         }
     }
 
-    // Gérer le clic sur une case
+     
     handleSquareClick(position) {
-        // Ne pas permettre de jouer pendant le tour de l'IA
+         
         if (this.isAIMoving) return;
 
-        // Ne permettre de jouer que si c'est le tour du joueur
+         
         if (this.currentTurn !== this.playerColor) return;
 
         const piece = this.board[position];
 
-        // Si une pièce est sélectionnée
+         
         if (this.selectedPiece) {
-            // Vérifier si c'est un mouvement valide
+             
             if (this.validMoves.includes(position)) {
                 this.makeMove(this.selectedPiece, position);
             } else if (piece && this.getPieceColor(piece) === this.currentTurn) {
-                // Sélectionner une autre pièce
+                 
                 this.selectPiece(position);
             } else {
                 this.deselectPiece();
@@ -177,17 +174,17 @@ class ChessGame {
         }
     }
 
-    // Sélectionner une pièce
+     
     selectPiece(position) {
         this.deselectPiece();
         this.selectedPiece = position;
         this.validMoves = this.getValidMoves(position);
 
-        // Mettre en surbrillance
+         
         const square = document.querySelector(`[data-position="${position}"]`);
         if (square) square.classList.add('selected');
 
-        // Afficher les mouvements valides
+         
         this.validMoves.forEach(move => {
             const moveSquare = document.querySelector(`[data-position="${move}"]`);
             if (moveSquare) {
@@ -200,7 +197,7 @@ class ChessGame {
         });
     }
 
-    // Désélectionner
+     
     deselectPiece() {
         if (this.selectedPiece) {
             const square = document.querySelector(`[data-position="${this.selectedPiece}"]`);
@@ -215,30 +212,30 @@ class ChessGame {
         this.validMoves = [];
     }
 
-    // Obtenir la couleur d'une pièce
+     
     getPieceColor(piece) {
         return piece.startsWith('white') ? 'white' : 'black';
     }
 
-    // Obtenir le type d'une pièce
+     
     getPieceType(piece) {
         return piece.split('_')[1];
     }
 
-    // Convertir position en coordonnées
+     
     positionToCoords(pos) {
-        const file = pos.charCodeAt(0) - 97; // a=0, b=1, etc.
-        const rank = parseInt(pos[1]) - 1;   // 1=0, 2=1, etc.
+        const file = pos.charCodeAt(0) - 97;  
+        const rank = parseInt(pos[1]) - 1;    
         return { file, rank };
     }
 
-    // Convertir coordonnées en position
+     
     coordsToPosition(file, rank) {
         if (file < 0 || file > 7 || rank < 0 || rank > 7) return null;
         return String.fromCharCode(97 + file) + (rank + 1);
     }
 
-    // Obtenir tous les mouvements valides pour une pièce
+     
     getValidMoves(position) {
         const piece = this.board[position];
         if (!piece) return [];
@@ -268,23 +265,23 @@ class ChessGame {
                 break;
         }
 
-        // Filtrer les mouvements qui laissent le roi en échec
+         
         return moves.filter(move => !this.wouldBeInCheck(position, move, color));
     }
 
-    // Mouvements du pion
+     
     getPawnMoves(position, color) {
         const moves = [];
         const { file, rank } = this.positionToCoords(position);
         const direction = color === 'white' ? 1 : -1;
         const startRank = color === 'white' ? 1 : 6;
 
-        // Avancer d'une case
+         
         let newPos = this.coordsToPosition(file, rank + direction);
         if (newPos && !this.board[newPos]) {
             moves.push(newPos);
 
-            // Avancer de deux cases depuis la position initiale
+             
             if (rank === startRank) {
                 newPos = this.coordsToPosition(file, rank + 2 * direction);
                 if (newPos && !this.board[newPos]) {
@@ -293,14 +290,14 @@ class ChessGame {
             }
         }
 
-        // Captures diagonales
+         
         for (const df of [-1, 1]) {
             newPos = this.coordsToPosition(file + df, rank + direction);
             if (newPos) {
                 if (this.board[newPos] && this.getPieceColor(this.board[newPos]) !== color) {
                     moves.push(newPos);
                 }
-                // Prise en passant
+                 
                 if (newPos === this.enPassantTarget) {
                     moves.push(newPos);
                 }
@@ -310,17 +307,17 @@ class ChessGame {
         return moves;
     }
 
-    // Mouvements de la tour
+     
     getRookMoves(position, color) {
         return this.getSlidingMoves(position, color, [[0, 1], [0, -1], [1, 0], [-1, 0]]);
     }
 
-    // Mouvements du fou
+     
     getBishopMoves(position, color) {
         return this.getSlidingMoves(position, color, [[1, 1], [1, -1], [-1, 1], [-1, -1]]);
     }
 
-    // Mouvements de la dame
+     
     getQueenMoves(position, color) {
         return [
             ...this.getRookMoves(position, color),
@@ -328,7 +325,7 @@ class ChessGame {
         ];
     }
 
-    // Mouvements glissants (tour, fou, dame)
+     
     getSlidingMoves(position, color, directions) {
         const moves = [];
         const { file, rank } = this.positionToCoords(position);
@@ -358,7 +355,7 @@ class ChessGame {
         return moves;
     }
 
-    // Mouvements du cavalier
+     
     getKnightMoves(position, color) {
         const moves = [];
         const { file, rank } = this.positionToCoords(position);
@@ -380,7 +377,7 @@ class ChessGame {
         return moves;
     }
 
-    // Mouvements du roi
+     
     getKingMoves(position, color) {
         const moves = [];
         const { file, rank } = this.positionToCoords(position);
@@ -398,11 +395,11 @@ class ChessGame {
             }
         }
 
-        // Roque
+         
         if (!this.isSquareAttacked(position, color)) {
             const baseRank = color === 'white' ? '1' : '8';
 
-            // Petit roque
+             
             if (this.castlingRights[color].kingSide) {
                 const f = this.coordsToPosition(5, parseInt(baseRank) - 1);
                 const g = this.coordsToPosition(6, parseInt(baseRank) - 1);
@@ -413,7 +410,7 @@ class ChessGame {
                 }
             }
 
-            // Grand roque
+             
             if (this.castlingRights[color].queenSide) {
                 const b = this.coordsToPosition(1, parseInt(baseRank) - 1);
                 const c = this.coordsToPosition(2, parseInt(baseRank) - 1);
@@ -429,7 +426,7 @@ class ChessGame {
         return moves;
     }
 
-    // Vérifier si une case est attaquée
+     
     isSquareAttacked(position, byColor) {
         const oppositeColor = byColor === 'white' ? 'black' : 'white';
 
@@ -440,7 +437,7 @@ class ChessGame {
 
                 switch (type) {
                     case 'pawn':
-                        // Le pion attaque en diagonale
+                         
                         const { file, rank } = this.positionToCoords(pos);
                         const dir = oppositeColor === 'white' ? 1 : -1;
                         attackMoves = [
@@ -461,7 +458,7 @@ class ChessGame {
                         attackMoves = this.getQueenMoves(pos, oppositeColor);
                         break;
                     case 'king':
-                        // Le roi n'attaque que les cases adjacentes
+                         
                         const kingCoords = this.positionToCoords(pos);
                         for (let df = -1; df <= 1; df++) {
                             for (let dr = -1; dr <= 1; dr++) {
@@ -486,16 +483,16 @@ class ChessGame {
         return false;
     }
 
-    // Vérifier si un mouvement met le roi en échec
+     
     wouldBeInCheck(from, to, color) {
-        // Simuler le mouvement
+         
         const originalBoard = { ...this.board };
         const piece = this.board[from];
 
         this.board[to] = piece;
         delete this.board[from];
 
-        // Trouver le roi
+         
         let kingPos = null;
         for (const [pos, p] of Object.entries(this.board)) {
             if (p === `${color}_king`) {
@@ -506,13 +503,13 @@ class ChessGame {
 
         const inCheck = this.isSquareAttacked(kingPos, color);
 
-        // Restaurer le plateau
+         
         this.board = originalBoard;
 
         return inCheck;
     }
 
-    // Effectuer un mouvement
+     
     makeMove(from, to, isAIMove = false) {
         const piece = this.board[from];
         if (!piece) return false;
@@ -521,19 +518,19 @@ class ChessGame {
         const type = this.getPieceType(piece);
         let capturedPiece = this.board[to] || null;
 
-        // Gérer le roque
+         
         if (type === 'king') {
             const fromCoords = this.positionToCoords(from);
             const toCoords = this.positionToCoords(to);
 
-            // Petit roque
+             
             if (toCoords.file - fromCoords.file === 2) {
                 const rookFrom = this.coordsToPosition(7, fromCoords.rank);
                 const rookTo = this.coordsToPosition(5, fromCoords.rank);
                 this.board[rookTo] = this.board[rookFrom];
                 delete this.board[rookFrom];
             }
-            // Grand roque
+             
             else if (fromCoords.file - toCoords.file === 2) {
                 const rookFrom = this.coordsToPosition(0, fromCoords.rank);
                 const rookTo = this.coordsToPosition(3, fromCoords.rank);
@@ -541,12 +538,12 @@ class ChessGame {
                 delete this.board[rookFrom];
             }
 
-            // Annuler les droits de roque
+             
             this.castlingRights[color].kingSide = false;
             this.castlingRights[color].queenSide = false;
         }
 
-        // Annuler les droits de roque si une tour bouge
+         
         if (type === 'rook') {
             const fromCoords = this.positionToCoords(from);
             if (fromCoords.file === 0) {
@@ -556,7 +553,7 @@ class ChessGame {
             }
         }
 
-        // Gérer la prise en passant
+         
         if (type === 'pawn' && to === this.enPassantTarget) {
             const direction = color === 'white' ? -1 : 1;
             const capturedPos = this.coordsToPosition(
@@ -567,7 +564,7 @@ class ChessGame {
             delete this.board[capturedPos];
         }
 
-        // Mettre à jour la cible de prise en passant
+         
         this.enPassantTarget = null;
         if (type === 'pawn') {
             const fromCoords = this.positionToCoords(from);
@@ -580,34 +577,70 @@ class ChessGame {
             }
         }
 
-        // Effectuer le mouvement
+         
+        const fromSquare = document.querySelector(`[data-position="${from}"]`);
+        const toSquare = document.querySelector(`[data-position="${to}"]`);
+        let fromRect, toRect;
+
+        if (fromSquare && toSquare) {
+            fromRect = fromSquare.getBoundingClientRect();
+            toRect = toSquare.getBoundingClientRect();
+        }
+
+         
         this.board[to] = piece;
         delete this.board[from];
 
-        // Promotion du pion
+         
         if (type === 'pawn') {
             const toRank = this.positionToCoords(to).rank;
             if ((color === 'white' && toRank === 7) || (color === 'black' && toRank === 0)) {
-                // Par défaut, promouvoir en dame
+                 
                 this.board[to] = `${color}_queen`;
             }
         }
 
-        // Sauvegarder le dernier coup
+         
         this.lastMove = { from, to, piece, captured: capturedPiece };
         this.moveHistory.push(this.lastMove);
 
-        // Changer de tour
+         
         this.currentTurn = color === 'white' ? 'black' : 'white';
 
-        // Vérifier échec et mat
+         
         this.checkGameState();
 
-        // Mettre à jour l'affichage
+         
         this.deselectPiece();
         this.renderBoard();
 
-        // Appeler le callback seulement pour les mouvements du joueur
+         
+        if (fromRect && toRect) {
+            const newPiece = document.querySelector(`[data-position="${to}"] .chess-piece`);
+            if (newPiece) {
+                const deltaX = fromRect.left - toRect.left;
+                const deltaY = fromRect.top - toRect.top;
+
+                 
+                newPiece.style.transition = 'none';
+                newPiece.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                newPiece.style.zIndex = '100';
+
+                 
+                newPiece.getBoundingClientRect();
+
+                 
+                newPiece.style.transition = 'transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                newPiece.style.transform = '';
+
+                 
+                setTimeout(() => {
+                    newPiece.style.zIndex = '';
+                }, 300);
+            }
+        }
+
+         
         if (!isAIMove && this.moveCallback) {
             this.moveCallback(
                 from, to, piece,
@@ -621,9 +654,9 @@ class ChessGame {
         return true;
     }
 
-    // Vérifier l'état du jeu
+     
     checkGameState() {
-        // Trouver le roi du joueur actuel
+         
         let kingPos = null;
         for (const [pos, piece] of Object.entries(this.board)) {
             if (piece === `${this.currentTurn}_king`) {
@@ -632,10 +665,10 @@ class ChessGame {
             }
         }
 
-        // Vérifier si le roi est en échec
+         
         this.isCheck = this.isSquareAttacked(kingPos, this.currentTurn);
 
-        // Vérifier s'il y a des mouvements légaux
+         
         let hasLegalMoves = false;
         for (const [pos, piece] of Object.entries(this.board)) {
             if (piece && this.getPieceColor(piece) === this.currentTurn) {
@@ -650,21 +683,99 @@ class ChessGame {
             if (this.isCheck) {
                 this.isCheckmate = true;
             } else {
-                this.isDraw = true; // Pat
+                this.isDraw = true;  
             }
         }
     }
 
-    // Mettre à jour l'état du plateau (pour la synchronisation en ligne)
-    updateBoardState(newState, newTurn = null) {
+     
+    updateBoardState(newState, newTurn = null, lastMove = null) {
+         
+        let fromRect, toRect;
+        let fromSquare, toSquare;
+
+        if (lastMove && lastMove.from_position && lastMove.to_position) {
+             
+            this.lastMove = {
+                from: lastMove.from_position,
+                to: lastMove.to_position,
+                piece: lastMove.piece_type  
+            };
+
+             
+            fromSquare = document.querySelector(`[data-position="${lastMove.from_position}"]`);
+            toSquare = document.querySelector(`[data-position="${lastMove.to_position}"]`);
+
+            if (fromSquare && toSquare) {
+                 
+                 
+                 
+                const pieceElement = fromSquare.querySelector('.chess-piece');
+                if (pieceElement) {
+                    fromRect = pieceElement.getBoundingClientRect();
+                     
+                    toRect = toSquare.getBoundingClientRect();
+                }
+            }
+        }
+
         this.board = { ...newState };
         if (newTurn) {
             this.currentTurn = newTurn;
         }
         this.renderBoard();
+
+         
+        if (fromRect && toRect && lastMove) {
+            const newPiece = document.querySelector(`[data-position="${lastMove.to_position}"] .chess-piece`);
+            if (newPiece) {
+                 
+                const newToRect = newPiece.parentElement.getBoundingClientRect();  
+
+                const deltaX = fromRect.left - newToRect.left;  
+                 
+                 
+                const currentPieceRect = newPiece.getBoundingClientRect();
+
+                const dX = fromRect.left - currentPieceRect.left;
+                const dY = fromRect.top - currentPieceRect.top;
+
+                newPiece.style.transition = 'none';
+                newPiece.style.transform = `translate(${dX}px, ${dY}px)`;
+                newPiece.style.zIndex = '100';
+
+                 
+                newPiece.getBoundingClientRect();
+
+                newPiece.style.transition = 'transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                newPiece.style.transform = '';
+
+                setTimeout(() => {
+                    newPiece.style.zIndex = '';
+                }, 300);
+            }
+        }
+
+         
+        this.enPassantTarget = null;
+        if (lastMove && lastMove.from_position && lastMove.to_position) {
+             
+             
+            const isPawn = lastMove.piece_type && lastMove.piece_type.includes('pawn');
+            if (isPawn) {
+                const fromC = this.positionToCoords(lastMove.from_position);
+                const toC = this.positionToCoords(lastMove.to_position);
+                if (Math.abs(toC.rank - fromC.rank) === 2) {
+                    this.enPassantTarget = this.coordsToPosition(
+                        fromC.file,
+                        (fromC.rank + toC.rank) / 2
+                    );
+                }
+            }
+        }
     }
 
-    // IA simple pour jouer contre l'ordinateur
+     
     makeAIMove() {
         if (this.isAIMoving) return null;
 
@@ -686,24 +797,24 @@ class ChessGame {
             return null;
         }
 
-        // Évaluer les coups
+         
         const scoredMoves = allMoves.map(move => {
-            let score = Math.random() * 10; // Base aléatoire
+            let score = Math.random() * 10;  
 
-            // Bonus pour les captures
+             
             const targetPiece = this.board[move.to];
             if (targetPiece) {
                 const values = { 'pawn': 1, 'knight': 3, 'bishop': 3, 'rook': 5, 'queen': 9, 'king': 100 };
                 score += values[this.getPieceType(targetPiece)] * 10;
             }
 
-            // Bonus pour le contrôle du centre
+             
             const centerSquares = ['d4', 'd5', 'e4', 'e5'];
             if (centerSquares.includes(move.to)) {
                 score += 2;
             }
 
-            // Bonus pour le développement des pièces
+             
             const piece = this.board[move.from];
             if (this.getPieceType(piece) === 'knight' || this.getPieceType(piece) === 'bishop') {
                 if (this.moveHistory.length < 10) {
@@ -714,13 +825,13 @@ class ChessGame {
             return { ...move, score };
         });
 
-        // Choisir le meilleur coup (avec un peu d'aléatoire)
+         
         scoredMoves.sort((a, b) => b.score - a.score);
         const topMoves = scoredMoves.slice(0, Math.min(3, scoredMoves.length));
         const selectedMove = topMoves[Math.floor(Math.random() * topMoves.length)];
 
         if (selectedMove) {
-            this.makeMove(selectedMove.from, selectedMove.to, true); // true = AI move
+            this.makeMove(selectedMove.from, selectedMove.to, true);  
             this.isAIMoving = false;
             return { ...selectedMove, isCheckmate: this.isCheckmate };
         }
@@ -730,15 +841,15 @@ class ChessGame {
     }
 }
 
-// Instance globale
+ 
 let chess = new ChessGame();
 
-// Fonctions globales pour l'interface
+ 
 function initChessBoard(boardState = null, currentTurn = 'white') {
     chess.init(boardState, currentTurn);
     chess.moveCallback = typeof onMoveComplete === 'function' ? onMoveComplete : null;
 }
 
-function updateBoardState(boardState, currentTurn = null) {
-    chess.updateBoardState(boardState, currentTurn);
+function updateBoardState(boardState, currentTurn = null, lastMove = null) {
+    chess.updateBoardState(boardState, currentTurn, lastMove);
 }

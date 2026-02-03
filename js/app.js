@@ -1,37 +1,32 @@
-/**
- * Application JavaScript principale
- * Gestion de l'authentification, navigation et fonctions communes
- */
+ 
 
-// Variables globales
+ 
 let currentUser = null;
 
-/**
- * Initialiser l'application
- */
+ 
 async function initApp() {
-    // Charger l'utilisateur depuis le localStorage
+     
     currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // Vérifier la session côté serveur
+     
     if (currentUser) {
         try {
             const response = await fetch('check_session.php');
             const data = await response.json();
 
             if (!data.authenticated) {
-                // Session expirée
+                 
                 logout(false);
             } else {
                 currentUser = data.user;
                 localStorage.setItem('user', JSON.stringify(currentUser));
 
-                // Vérifier les invitations
+                 
                 if (data.pending_invitations && data.pending_invitations.length > 0) {
                     showPendingInvitations(data.pending_invitations);
                 }
 
-                // Vérifier les parties en cours
+                 
                 if (data.active_games && data.active_games.length > 0) {
                     showActiveGamesNotification(data.active_games);
                 }
@@ -41,13 +36,11 @@ async function initApp() {
         }
     }
 
-    // Mettre à jour la navigation
+     
     updateNavigation();
 }
 
-/**
- * Mettre à jour la navigation selon l'état de connexion
- */
+ 
 function updateNavigation() {
     const navUserSection = document.getElementById('nav-user-section');
     if (!navUserSection) return;
@@ -72,14 +65,12 @@ function updateNavigation() {
     }
 }
 
-/**
- * Déconnexion
- */
+ 
 async function logout(redirect = true) {
     try {
         await fetch('logout.php');
     } catch (error) {
-        // Ignorer les erreurs de déconnexion
+         
     }
 
     localStorage.removeItem('user');
@@ -91,9 +82,7 @@ async function logout(redirect = true) {
     }
 }
 
-/**
- * Afficher les invitations en attente
- */
+ 
 function showPendingInvitations(invitations) {
     const panel = document.getElementById('invitations-panel');
     if (!panel) return;
@@ -123,9 +112,7 @@ function showPendingInvitations(invitations) {
     `).join('');
 }
 
-/**
- * Notification de parties en cours
- */
+ 
 function showActiveGamesNotification(games) {
     const activeGame = games.find(g =>
         g.status === 'active' &&
@@ -143,9 +130,7 @@ function showActiveGamesNotification(games) {
     }
 }
 
-/**
- * Répondre à une invitation
- */
+ 
 async function respondInvitation(invitationId, accept) {
     try {
         const response = await fetch('api/users.php?action=respond_invitation', {
@@ -156,7 +141,7 @@ async function respondInvitation(invitationId, accept) {
 
         const data = await response.json();
 
-        // Retirer l'invitation de l'affichage
+         
         const toast = document.querySelector(`[data-invitation-id="${invitationId}"]`);
         if (toast) toast.remove();
 
@@ -177,9 +162,7 @@ async function respondInvitation(invitationId, accept) {
     }
 }
 
-/**
- * Afficher un toast
- */
+ 
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -200,16 +183,14 @@ function showToast(message, type = 'info') {
 
     container.appendChild(toast);
 
-    // Supprimer après 5 secondes
+     
     setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease reverse';
         setTimeout(() => toast.remove(), 300);
     }, 5000);
 }
 
-/**
- * Ouvrir un modal
- */
+ 
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -217,9 +198,7 @@ function openModal(modalId) {
     }
 }
 
-/**
- * Fermer un modal
- */
+ 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -227,14 +206,14 @@ function closeModal(modalId) {
     }
 }
 
-// Fermer les modals en cliquant à l'extérieur
+ 
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');
     }
 });
 
-// Fermer les modals avec Escape
+ 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(modal => {
@@ -243,9 +222,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-/**
- * Formater une date relative
- */
+ 
 function formatRelativeTime(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
@@ -262,18 +239,14 @@ function formatRelativeTime(dateStr) {
     return date.toLocaleDateString('fr-FR');
 }
 
-/**
- * Echapper le HTML
- */
+ 
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-/**
- * Polling pour les mises à jour en temps réel
- */
+ 
 class RealtimeUpdater {
     constructor(options = {}) {
         this.interval = options.interval || 5000;
@@ -303,7 +276,7 @@ class RealtimeUpdater {
     }
 }
 
-// Détection de l'activité de l'utilisateur pour le statut en ligne
+ 
 let lastActivity = Date.now();
 
 document.addEventListener('mousemove', () => { lastActivity = Date.now(); });
@@ -311,11 +284,11 @@ document.addEventListener('keypress', () => { lastActivity = Date.now(); });
 document.addEventListener('click', () => { lastActivity = Date.now(); });
 document.addEventListener('scroll', () => { lastActivity = Date.now(); });
 
-// Mettre à jour le statut en ligne périodiquement
-// Mettre à jour le statut en ligne et vérifier les invitations périodiquement
+ 
+ 
 if (currentUser) {
     setInterval(async () => {
-        // Si inactif depuis plus de 5 minutes, ne pas faire de requête
+         
         if (Date.now() - lastActivity > 5 * 60 * 1000) return;
 
         try {
@@ -323,12 +296,12 @@ if (currentUser) {
             const data = await response.json();
 
             if (data.authenticated) {
-                // Mettre à jour les invitations
+                 
                 if (data.pending_invitations) {
                     showPendingInvitations(data.pending_invitations);
                 }
 
-                // Sur la page d'accueil, mettre à jour le bouton "Retour en partie"
+                 
                 if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
                     if (typeof updateHeroAction === 'function') {
                         updateHeroAction(data.active_games);
@@ -340,10 +313,10 @@ if (currentUser) {
         } catch (error) {
             console.error('Session check error', error);
         }
-    }, 5000); // Toutes les 5 secondes
+    }, 5000);  
 }
 
 
-// Gestion de la fermeture de page - ne pas déconnecter lors de la navigation
-// Le logout se fait uniquement via le bouton "Déconnexion"
+ 
+ 
 

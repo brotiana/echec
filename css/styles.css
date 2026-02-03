@@ -1,9 +1,6 @@
-/* =====================================================
-   CHESS WEBSITE - STYLES CSS
-   Design moderne et responsive avec thème sombre
-   ===================================================== */
+ 
 
-/* Variables CSS */
+ 
 :root {
     --primary: #6366f1;
     --primary-hover: #4f46e5;
@@ -38,7 +35,7 @@
     --transition: all 0.3s ease;
 }
 
-/* Reset et base */
+ 
 *,
 *::before,
 *::after {
@@ -60,7 +57,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Background animé */
+ 
 body::before {
     content: '';
     position: fixed;
@@ -76,7 +73,7 @@ body::before {
     z-index: -1;
 }
 
-/* Typography */
+ 
 h1,
 h2,
 h3,
@@ -114,16 +111,14 @@ a:hover {
     color: var(--primary-hover);
 }
 
-/* Container */
+ 
 .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
 
-/* =====================================================
-   NAVIGATION
-   ===================================================== */
+ 
 .navbar {
     background: rgba(26, 26, 46, 0.95);
     backdrop-filter: blur(20px);
@@ -187,9 +182,7 @@ a:hover {
     border: 2px solid var(--primary);
 }
 
-/* =====================================================
-   BUTTONS
-   ===================================================== */
+ 
 .btn {
     display: inline-flex;
     align-items: center;
@@ -264,9 +257,7 @@ a:hover {
     border-radius: 50%;
 }
 
-/* =====================================================
-   CARDS
-   ===================================================== */
+ 
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -295,9 +286,7 @@ a:hover {
     margin: 0;
 }
 
-/* =====================================================
-   FORMS
-   ===================================================== */
+ 
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -345,9 +334,7 @@ a:hover {
     margin-top: 0.5rem;
 }
 
-/* =====================================================
-   HOME PAGE
-   ===================================================== */
+ 
 .hero {
     text-align: center;
     padding: 8rem 0;
@@ -412,9 +399,7 @@ a:hover {
     color: var(--text-secondary);
 }
 
-/* =====================================================
-   AUTH PAGE
-   ===================================================== */
+ 
 .auth-container {
     min-height: 100vh;
     display: flex;
@@ -488,9 +473,7 @@ a:hover {
     font-weight: 500;
 }
 
-/* =====================================================
-   GAME PAGE
-   ===================================================== */
+ 
 .game-container {
     display: grid;
     grid-template-columns: 1fr 350px;
@@ -520,20 +503,48 @@ a:hover {
     gap: 0.75rem;
 }
 
+.player-avatar-container {
+    position: relative;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.active-turn {
+    position: relative;
+}
+
+.active-turn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--primary);
+    border-right-color: var(--secondary);
+    animation: spin 1.5s linear infinite;
+}
+
 .player-avatar {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     object-fit: cover;
+    display: block;
 }
 
-.player-name {
-    font-weight: 600;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.player-color {
-    font-size: 0.875rem;
-    color: var(--text-muted);
+ 
+.chess-piece.moving {
+    z-index: 100 !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .turn-indicator {
@@ -541,7 +552,6 @@ a:hover {
     background: var(--primary);
     border-radius: var(--radius-md);
     font-weight: 600;
-    animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
@@ -556,7 +566,7 @@ a:hover {
     }
 }
 
-/* Échiquier */
+ 
 .chess-board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
@@ -615,7 +625,7 @@ a:hover {
 }
 
 .chess-square.last-move {
-    background: rgba(255, 255, 0, 0.3) !important;
+    background: rgba(34, 197, 94, 0.5) !important;
 }
 
 .chess-square.check {
@@ -642,7 +652,7 @@ a:hover {
     transform: scale(1.1);
 }
 
-/* Coordonnées */
+ 
 .board-coords {
     position: absolute;
     font-size: 0.7rem;
@@ -668,7 +678,7 @@ a:hover {
     color: #f0d9b5;
 }
 
-/* Actions de jeu */
+ 
 .game-actions {
     display: flex;
     gap: 1rem;
@@ -676,9 +686,7 @@ a:hover {
     justify-content: center;
 }
 
-/* =====================================================
-   SIDEBAR CHAT
-   ===================================================== */
+ 
 .game-sidebar {
     display: flex;
     flex-direction: column;
@@ -771,7 +779,7 @@ a:hover {
     color: var(--text-primary);
 }
 
-/* Emojis */
+ 
 .emoji-bar {
     display: flex;
     gap: 0.25rem;
@@ -807,7 +815,7 @@ a:hover {
     transform: scale(1.15);
 }
 
-/* Pluie d'emojis */
+ 
 .emoji-rain {
     position: fixed;
     top: 0;
@@ -825,7 +833,7 @@ a:hover {
     animation: fall linear forwards;
     opacity: 0.9;
     color: var(--primary);
-    /* Default color for SVGs */
+     
 }
 
 .falling-icon svg {
@@ -846,9 +854,7 @@ a:hover {
     }
 }
 
-/* =====================================================
-   USERS LIST PAGE
-   ===================================================== */
+ 
 .users-container {
     display: grid;
     grid-template-columns: 1fr 400px;
@@ -911,7 +917,7 @@ a:hover {
     box-shadow: 0 0 8px var(--success);
 }
 
-/* Conversation sidebar */
+ 
 .conversation-panel {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -940,9 +946,7 @@ a:hover {
     gap: 0.75rem;
 }
 
-/* =====================================================
-   PROFILE PAGE
-   ===================================================== */
+ 
 .profile-container {
     padding: 2rem 0;
 }
@@ -1003,7 +1007,7 @@ a:hover {
     font-size: 0.875rem;
 }
 
-/* Statistiques */
+ 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1031,7 +1035,7 @@ a:hover {
     font-size: 0.875rem;
 }
 
-/* Publications */
+ 
 .publications-section {
     margin-top: 2rem;
 }
@@ -1066,9 +1070,7 @@ a:hover {
     font-size: 1.125rem;
 }
 
-/* =====================================================
-   MODALS
-   ===================================================== */
+ 
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1120,9 +1122,7 @@ a:hover {
     color: var(--text-muted);
 }
 
-/* =====================================================
-   INVITATIONS PANEL
-   ===================================================== */
+ 
 .invitations-panel {
     position: fixed;
     bottom: 1.5rem;
@@ -1160,9 +1160,7 @@ a:hover {
     gap: 0.5rem;
 }
 
-/* =====================================================
-   SPECTATORS
-   ===================================================== */
+ 
 .spectators-panel {
     margin-top: 1rem;
     padding: 1rem;
@@ -1189,9 +1187,7 @@ a:hover {
     border: 2px solid var(--border-color);
 }
 
-/* =====================================================
-   GAME COMPLETED MODAL
-   ===================================================== */
+ 
 .game-result {
     text-align: center;
 }
@@ -1211,9 +1207,7 @@ a:hover {
     margin-bottom: 2rem;
 }
 
-/* =====================================================
-   PAUSE MODAL
-   ===================================================== */
+ 
 .pause-modal {
     text-align: center;
 }
@@ -1234,9 +1228,7 @@ a:hover {
     color: var(--primary);
 }
 
-/* =====================================================
-   LOADING & EMPTY STATES
-   ===================================================== */
+ 
 .loading {
     display: flex;
     align-items: center;
@@ -1270,9 +1262,7 @@ a:hover {
     margin-bottom: 1rem;
 }
 
-/* =====================================================
-   ALERTS / TOASTS
-   ===================================================== */
+ 
 .toast-container {
     position: fixed;
     top: 1.5rem;
@@ -1310,9 +1300,7 @@ a:hover {
     background: var(--primary);
 }
 
-/* =====================================================
-   MOBILE CHAT BUTTON & POPUP
-   ===================================================== */
+ 
 .mobile-chat-btn {
     display: none;
     position: fixed;
@@ -1362,7 +1350,7 @@ a:hover {
     display: none !important;
 }
 
-/* Chat popup modal */
+ 
 .chat-popup-overlay {
     display: none;
     position: fixed;
@@ -1448,9 +1436,7 @@ a:hover {
     border-top: 1px solid var(--border-color);
 }
 
-/* =====================================================
-   EMOTION REACTION ICONS
-   ===================================================== */
+ 
 .emotion-bar {
     display: flex;
     justify-content: center;
@@ -1501,9 +1487,7 @@ a:hover {
     color: #3b82f6;
 }
 
-/* =====================================================
-   RESPONSIVE
-   ===================================================== */
+ 
 .mobile-only {
     display: none !important;
 }
@@ -1552,7 +1536,7 @@ a:hover {
     display: none;
 }
 
-/* Tablet and mobile - apply from 1024px and below */
+ 
 @media (max-width: 1024px) {
     .mobile-only {
         display: inline-flex !important;
@@ -1562,7 +1546,7 @@ a:hover {
         font-size: 2.5rem;
     }
 
-    /* Mobile navigation - icons only */
+     
     .nav-links {
         display: flex;
         position: fixed;
@@ -1586,7 +1570,7 @@ a:hover {
         font-size: 0.75rem;
     }
 
-    /* Hide text in nav links */
+     
     .nav-link .nav-link-text {
         display: none;
     }
@@ -1596,7 +1580,7 @@ a:hover {
         height: 24px;
     }
 
-    /* Add bottom padding to body for fixed nav */
+     
     body {
         padding-bottom: 70px;
     }
@@ -1605,7 +1589,7 @@ a:hover {
         width: 100%;
         height: auto;
         aspect-ratio: 1;
-        max-width: 500px;
+        max-width: 800px;
     }
 
     .chess-piece {
@@ -1626,22 +1610,22 @@ a:hover {
         grid-template-columns: 1fr;
     }
 
-    /* Hide chat sidebar */
+     
     .game-sidebar {
         display: none;
     }
 
-    /* Show mobile chat button */
+     
     .mobile-chat-btn {
         display: flex !important;
     }
 
-    /* Game page specific - FIXED chessboard, no scrolling */
+     
     .game-page-body {
         overflow: hidden;
         height: 100vh;
         height: 100dvh;
-        /* Dynamic viewport height for mobile browsers */
+         
         padding-bottom: 0;
         position: fixed;
         top: 0;
@@ -1681,7 +1665,7 @@ a:hover {
         flex: 1;
     }
 
-    /* Hide bottom player-info on mobile */
+     
     .game-page-body #bottom-player {
         display: none;
     }
@@ -1693,8 +1677,8 @@ a:hover {
 
     .game-page-body .chess-board {
         flex-shrink: 0;
-        width: min(80vw, 350px);
-        max-width: 350px;
+        width: min(80vw, 450px);
+        max-width: 450px;
     }
 
     .game-page-body .game-actions {
@@ -1757,9 +1741,7 @@ a:hover {
     }
 }
 
-/* =====================================================
-   SCROLLBAR CUSTOM
-   ===================================================== */
+ 
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -1777,9 +1759,7 @@ a:hover {
     background: var(--primary);
 }
 
-/* =====================================================
-   UTILITIES
-   ===================================================== */
+ 
 .hidden {
     display: none !important;
 }

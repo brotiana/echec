@@ -194,7 +194,7 @@ function sendEmojiRain() {
     }
     
     // Liste des emojis autorisés
-    $allowedEmojis = ['😊', '😂', '🎉', '👏', '🔥', '❤️', '😢', '😠', '🤔', '😎', '🏆', '💪', '👍', '👎', '🙌'];
+    $allowedEmojis = ['😊', '😂', '🎉', '👏', '🔥', '❤️', '😢', '😠', '🤔', '😎', '🏆', '💪', '👍', '👎', '🙌', '😭', '😟'];
     
     if (!in_array($emoji, $allowedEmojis)) {
         $emoji = '😊';
