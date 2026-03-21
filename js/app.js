@@ -30,6 +30,12 @@ async function initApp() {
                 if (data.active_games && data.active_games.length > 0) {
                     showActiveGamesNotification(data.active_games);
                 }
+
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+                    if (typeof updateHeroAction === 'function') {
+                        updateHeroAction(data.active_games);
+                    }
+                }
             }
         } catch (error) {
             console.error('Session check error:', error);
@@ -38,6 +44,11 @@ async function initApp() {
 
      
     updateNavigation();
+    
+    // Start global WebSocket if we have a valid user
+    if (currentUser) {
+        initGlobalWebSocket();
+    }
 }
 
  
@@ -284,39 +295,57 @@ document.addEventListener('keypress', () => { lastActivity = Date.now(); });
 document.addEventListener('click', () => { lastActivity = Date.now(); });
 document.addEventListener('scroll', () => { lastActivity = Date.now(); });
 
- 
- 
-if (currentUser) {
-    setInterval(async () => {
-         
-        if (Date.now() - lastActivity > 5 * 60 * 1000) return;
+// Global Websocket
+let globalWs = null;
 
+function initGlobalWebSocket() {
+    if (!currentUser) return;
+    
+    globalWs = new WebSocket('ws://localhost:8080');
+    
+    globalWs.onopen = () => {
+        globalWs.send(JSON.stringify({ type: 'subscribe_global', userId: currentUser.id }));
+    };
+    
+    globalWs.onmessage = async (event) => {
         try {
-            const response = await fetch('check_session.php');
-            const data = await response.json();
-
-            if (data.authenticated) {
-                 
-                if (data.pending_invitations) {
-                    showPendingInvitations(data.pending_invitations);
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'invitation_sent' || data.type === 'invitation_responded') {
+                if (typeof loadInvitations === 'function') loadInvitations();
+                
+                // Fetch check session to update top right notifications
+                const response = await fetch('check_session.php');
+                const sessionData = await response.json();
+                if (sessionData.pending_invitations) {
+                    showPendingInvitations(sessionData.pending_invitations);
                 }
-
-                 
-                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
-                    if (typeof updateHeroAction === 'function') {
-                        updateHeroAction(data.active_games);
+            } else if (data.type === 'private_message_sent') {
+                if (typeof loadPrivateMessages === 'function') {
+                    // Only load if chatting with sender
+                    if (typeof selectedUserId !== 'undefined' && selectedUserId == data.senderId) {
+                        loadPrivateMessages();
                     }
                 }
-            } else if (data.error === 'Non connecté' && currentUser) {
-                logout(false);
+            } else if (data.type === 'active_users_changed' || data.type === 'global_update') {
+                if (typeof loadActiveUsers === 'function') loadActiveUsers();
             }
-        } catch (error) {
-            console.error('Session check error', error);
-        }
-    }, 5000);  
+        } catch (e) {}
+    };
+    
+    globalWs.onclose = () => {
+        setTimeout(initGlobalWebSocket, 3000);
+    };
 }
 
+function notifyGlobalUpdate(type, receiverId = null) {
+    if (globalWs && globalWs.readyState === WebSocket.OPEN) {
+        globalWs.send(JSON.stringify({ 
+            type: type, 
+            senderId: currentUser ? currentUser.id : null,
+            receiverId: receiverId 
+        }));
+    }
+}
 
- 
- 
-
+// Automatically start global websocket if logged in (supprimé car déplacé dans initApp)

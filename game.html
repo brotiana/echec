@@ -14,7 +14,7 @@
 </head>
 
 <body class="game-page-body">
-    
+
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo">
@@ -35,12 +35,12 @@
         </div>
     </nav>
 
-    
+
     <div class="container">
         <div class="game-container">
-            
+
             <div class="game-main">
-                
+
                 <div class="game-info" id="top-player">
                     <div class="player-info">
                         <div class="player-avatar-container" id="top-avatar-container">
@@ -54,12 +54,12 @@
                     </div>
                 </div>
 
-                
+
                 <div class="chess-board" id="chess-board">
-                    
+
                 </div>
 
-                
+
                 <div class="game-info" id="bottom-player">
                     <div class="player-info">
                         <div class="player-avatar-container" id="bottom-avatar-container">
@@ -75,7 +75,7 @@
                     <div class="turn-indicator" id="bottom-turn-text">C'est votre tour</div>
                 </div>
 
-                
+
                 <div class="game-actions">
                     <button class="btn btn-secondary" onclick="togglePublic()" id="btn-public">
                         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -103,7 +103,7 @@
                     </button>
                 </div>
 
-                
+
                 <div class="emotion-bar">
                     <button class="emotion-btn love" onclick="sendEmojiRain('❤️')" title="J'adore">
                         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -122,7 +122,7 @@
                     </button>
                 </div>
 
-                
+
                 <div class="spectators-panel hidden" id="spectators-panel">
                     <div class="spectators-title">
                         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -136,7 +136,7 @@
                 </div>
             </div>
 
-            
+
             <div class="game-sidebar">
                 <div class="chat-container">
                     <div class="chat-header">
@@ -158,7 +158,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="chat-input-area">
                         <input type="text" class="chat-input" id="chat-input" placeholder="Écrivez un message..."
                             onkeypress="if(event.key==='Enter') sendMessage()">
@@ -172,7 +172,7 @@
                     </div>
                 </div>
 
-                
+
                 <div class="card mt-2" style="max-height: 200px; overflow-y: auto;">
                     <h4 class="card-title">
                         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -191,7 +191,7 @@
         </div>
     </div>
 
-    
+
     <button class="mobile-chat-btn" id="mobile-chat-btn" onclick="openMobileChat()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path
@@ -201,7 +201,7 @@
         <span class="chat-badge hidden" id="chat-badge">0</span>
     </button>
 
-    
+
     <div class="chat-popup-overlay" id="chat-popup-overlay" onclick="closeMobileChat(event)">
         <div class="chat-popup" onclick="event.stopPropagation()">
             <div class="chat-popup-header">
@@ -233,13 +233,13 @@
         </div>
     </div>
 
-    
+
     <div class="emoji-rain" id="emoji-rain"></div>
 
-    
+
     <div class="toast-container" id="toast-container"></div>
 
-    
+
     <div class="modal-overlay" id="result-modal">
         <div class="modal">
             <div class="game-result">
@@ -259,7 +259,7 @@
         </div>
     </div>
 
-    
+
     <div class="modal-overlay" id="pause-request-modal">
         <div class="modal pause-modal">
             <div class="modal-header">
@@ -275,7 +275,7 @@
         </div>
     </div>
 
-    
+
     <div class="modal-overlay" id="pause-modal">
         <div class="modal pause-modal">
             <div class="pause-icon">
@@ -291,7 +291,7 @@
         </div>
     </div>
 
-    
+
     <div class="modal-overlay" id="abandon-modal">
         <div class="modal">
             <div class="modal-header">
@@ -352,7 +352,17 @@
 
         // Mode contre l'ordinateur
         async function initComputerGame() {
-            document.getElementById('black-name').textContent = 'Ordinateur';
+            // Dans ce mode, je suis blancs (en bas), l'ordinateur est noirs (en haut)
+            document.getElementById('top-name').textContent = 'Ordinateur';
+            document.getElementById('bottom-name').textContent = currentUser ? currentUser.username : 'Vous';
+
+            // Set avatars
+            document.getElementById('top-avatar').src = 'public/img/robot.png'; // Ou une image par défaut
+            if (currentUser && currentUser.profile_photo) {
+                document.getElementById('bottom-avatar').src = 'uploads/profiles/' + currentUser.profile_photo;
+            }
+
+            document.getElementById('btn-pause').classList.add('hidden');
             document.getElementById('btn-pause').classList.add('hidden');
             document.getElementById('btn-public').classList.add('hidden');
 
@@ -462,6 +472,7 @@
                         .then(res => {
                             if (res.success && res.spectator_count) {
                                 document.getElementById('spectator-count').textContent = res.spectator_count;
+                                notifyGameUpdate('spectator_joined');
                             }
                         });
                 }
@@ -582,12 +593,39 @@
             container.innerHTML = html;
         }
 
-        // Polling pour les mises à jour
+        // Websocket pour les mises à jour
+        let ws;
         function startPolling() {
-            pollingInterval = setInterval(async () => {
-                await checkGameUpdates();
-                await loadNewMessages();
-            }, 2000);
+            startWebsocket(); // Rétrocompatibilité
+        }
+        
+        function startWebsocket() {
+            ws = new WebSocket('ws://localhost:8080');
+            
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ type: 'subscribe', gameId: gameId }));
+            };
+            
+            ws.onmessage = async (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'game_updated' || data.type === 'spectator_joined') {
+                        await checkGameUpdates();
+                    } else if (data.type === 'new_message' || data.type === 'emoji_rain') {
+                        await loadNewMessages();
+                    }
+                } catch(e) {}
+            };
+            
+            ws.onclose = () => {
+                setTimeout(startWebsocket, 3000);
+            };
+        }
+        
+        function notifyGameUpdate(type = 'game_updated') {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: type, gameId: gameId }));
+            }
         }
 
         async function checkGameUpdates() {
@@ -757,6 +795,7 @@
                         content: content
                     })
                 });
+                notifyGameUpdate('new_message');
                 // Recharger les messages immédiatement
                 await loadNewMessages();
             } catch (error) {
@@ -822,6 +861,7 @@
                         content: content
                     })
                 });
+                notifyGameUpdate('new_message');
                 // Recharger les messages immédiatement
                 await loadNewMessages();
             } catch (error) {
@@ -849,6 +889,7 @@
                         emoji: emoji
                     })
                 });
+                notifyGameUpdate('emoji_rain');
             } catch (error) {
                 console.error('Emoji rain error:', error);
             }
@@ -907,6 +948,7 @@
                             panel.classList.add('hidden');
                         }
                         showToast(data.message, 'success');
+                        notifyGameUpdate('game_updated');
                     }
                 });
         }
@@ -926,6 +968,7 @@
                 .then(r => r.json())
                 .then(data => {
                     showToast(data.message || data.error, data.success ? 'success' : 'error');
+                    if (data.success) notifyGameUpdate('game_updated');
                 });
         }
 
@@ -940,6 +983,7 @@
             const data = await response.json();
 
             showToast(data.message, data.success ? 'success' : 'error');
+            if (data.success) notifyGameUpdate('game_updated');
 
             if (accept) {
                 openModal('pause-modal');
@@ -957,6 +1001,7 @@
             const data = await response.json();
 
             showToast(data.message, data.success ? 'success' : 'error');
+            if (data.success) notifyGameUpdate('game_updated');
         }
 
         function confirmAbandon() {
@@ -974,6 +1019,7 @@
             const data = await response.json();
 
             if (data.success) {
+                notifyGameUpdate('game_updated');
                 showGameResult({
                     winner_id: data.winner_id,
                     status: 'abandoned'
@@ -1083,6 +1129,7 @@
                     // Restaurer le plateau
                     loadGame();
                 } else {
+                    notifyGameUpdate('game_updated');
                     updateTurnIndicator(data.next_turn);
 
                     if (data.is_checkmate) {

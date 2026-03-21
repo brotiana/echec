@@ -200,9 +200,7 @@
             loadActiveUsers();
             loadInvitations();
 
-            // Rafraîchir périodiquement
-            setInterval(loadActiveUsers, 30000);
-            setInterval(loadInvitations, 10000);
+            // Le rafraîchissement est géré par les événements WebSocket dans app.js
         });
 
         async function loadActiveUsers() {
@@ -295,6 +293,7 @@
 
                 if (data.success && data.game_id) {
                     showToast(data.message, 'success');
+                    notifyGlobalUpdate('invitation_sent', userId);
                     // Rediriger vers la page de jeu immédiatement
                     setTimeout(() => {
                         window.location.href = `game.html?id=${data.game_id}`;
@@ -302,6 +301,7 @@
                 } else {
                     showToast(data.message || data.error, data.success ? 'success' : 'error');
                     if (data.success) {
+                        notifyGlobalUpdate('invitation_sent', userId);
                         loadInvitations();
                     }
                 }
@@ -384,9 +384,11 @@
                 showToast(data.message, data.success ? 'success' : 'error');
 
                 if (data.success && accept && data.game_id) {
+                    notifyGlobalUpdate('invitation_responded');
                     // Rediriger vers la partie
                     window.location.href = `game.html?id=${data.game_id}`;
                 } else {
+                    notifyGlobalUpdate('invitation_responded');
                     loadInvitations();
                 }
             } catch (error) {
@@ -421,11 +423,7 @@
             // Charger les messages
             loadPrivateMessages();
 
-            // Démarrer le polling des messages
-            if (privateMessageInterval) {
-                clearInterval(privateMessageInterval);
-            }
-            privateMessageInterval = setInterval(loadPrivateMessages, 3000);
+            // Polling des messages supprimé - maintenant géré par WebSocket via app.js
         }
 
         function closeConversationPanel() {
@@ -435,10 +433,6 @@
                 panel.style.display = 'none';
             }
 
-            if (privateMessageInterval) {
-                clearInterval(privateMessageInterval);
-                privateMessageInterval = null;
-            }
         }
 
         async function loadPrivateMessages() {
@@ -516,6 +510,7 @@
                 });
 
                 // Recharger immédiatement
+                notifyGlobalUpdate('private_message_sent', selectedUserId);
                 loadPrivateMessages();
             } catch (error) {
                 showToast('Erreur d\'envoi', 'error');
@@ -548,12 +543,7 @@
             return div.innerHTML;
         }
 
-        // Cleanup
-        window.addEventListener('beforeunload', () => {
-            if (privateMessageInterval) {
-                clearInterval(privateMessageInterval);
-            }
-        });
+        // Cleanup supprimé, interval inexistant
     </script>
 
     <style>
