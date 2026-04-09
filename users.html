@@ -246,7 +246,7 @@
                         </div>
                     </div>
                     <div class="user-status">
-                        <span class="status-dot ${user.is_online ? 'online' : ''}"></span>
+                        <span class="status-dot ${user.is_online == 1 || user.is_online === true ? 'online' : ''}"></span>
                     </div>
                     <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); inviteUser(${user.id}, '${user.username}')">
                         Inviter
@@ -268,11 +268,20 @@
                 const container = document.getElementById('users-list');
 
                 if (data.success && data.users.length > 0) {
-                    container.innerHTML = data.users.map(user => createUserCard(user)).join('');
+                    const activeUsers = data.users.filter(user => user.is_online == 1 || user.is_online === true);
+                    if (activeUsers.length > 0) {
+                        container.innerHTML = activeUsers.map(user => createUserCard(user)).join('');
+                    } else {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <p>Aucun utilisateur actif trouvé pour "${escapeHtml(query)}"</p>
+                            </div>
+                        `;
+                    }
                 } else {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p>Aucun résultat pour "${query}"</p>
+                            <p>Aucun résultat pour "${escapeHtml(query)}"</p>
                         </div>
                     `;
                 }
