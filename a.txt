@@ -1,0 +1,8 @@
+Il faut ajouter 3 section dans la page : http://localhost/echec/users.html
+
+1. Joueurs en ligne
+2. partie en cours : tous les partie qui 'etait pas finit ou mis en pause
+2. Tous les utilisateurs : lorsqu'on clique sur un utilisateur , son profile sera ouvert . Et dans chaque profile , il devrait avoir un bouton pour envoyer un message à l'utilisateurs .
+
+
+Autre probeme : actuelement , lorsque  un utilisateur accepte un invitation de jouer , il faut que ce utilisateur actualise la page une fois pour pouvoir bouget le premier pion et pour que la réaction qu'il clique apparait sur l'autre utilisateurs .

@@ -1,5 +1,19 @@
 const WebSocket = require('ws');
+const mysql = require('mysql2');
+
 const wss = new WebSocket.Server({ port: 8080 });
+
+// Database connection
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'echec_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+const promisePool = pool.promise();
 
 // Map WebSocket to client data { gameId: string, userId: string }
 const clients = new Map();
@@ -20,6 +34,16 @@ wss.on('connection', function connection(ws) {
         info.userId = data.userId;
         clients.set(ws, info);
         console.log(`User ${data.userId} subscribed globally`);
+        
+        promisePool.execute('UPDATE users SET is_online = 1, last_seen = NOW() WHERE id = ?', [data.userId])
+          .then(() => {
+            wss.clients.forEach(function each(client) {
+              if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ type: 'active_users_changed' }));
+              }
+            });
+          })
+          .catch(err => console.error('Error updating online status:', err));
       }
       else if (['game_updated', 'new_message', 'emoji_rain', 'spectator_joined'].includes(data.type)) {
         // Broadcast to specific game
@@ -59,13 +83,31 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('close', () => {
+    const info = clients.get(ws);
+    const userId = info && info.userId ? info.userId : null;
     clients.delete(ws);
-    // Broadcast active users changed when someone disconnects
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'active_users_changed' }));
+    
+    if (userId) {
+      let isStillActive = false;
+      for (const [client, cInfo] of clients.entries()) {
+        if (cInfo.userId == userId && client.readyState === WebSocket.OPEN) {
+          isStillActive = true;
+          break;
+        }
       }
-    });
+      
+      if (!isStillActive) {
+        promisePool.execute('UPDATE users SET is_online = 0 WHERE id = ?', [userId])
+          .then(() => {
+            wss.clients.forEach(function each(client) {
+              if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ type: 'active_users_changed' }));
+              }
+            });
+          })
+          .catch(err => console.error('Error setting offline status:', err));
+      }
+    }
   });
 });
 
