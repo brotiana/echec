@@ -1,7 +1,0 @@
-Il y a plusieurs modifications a apporter :
-- le spectateur ne devrait pas avoir le droit d'envoyer un message , il faut enlever l'icone message dans le spectateur .
-- actuelement  il faut que les deux joueurs actualise la page pour que le nombre de spectateur s'affiche alors qu'il faut qu'il se synchronise en temps réel
-- j'ai demandé de desactivé l'overflow à  partie d'inferieur de 1025px et le nouveaux probleme est : un ligne de l'echiquier ou 2 lignes sont caché . 
-- il faut enlever le "player-info" sur le bas de l'echequier , rendre fixe l'echequier mais activer l'overflow sur les autre boutons en bas si besoin
-- lorsque je demande un pause , les spectateurs le vois aussi alors qu'il ne faut pas . Et lorsque le jeux est mis pause , il y aura un notif sur les spectateurs
-- lorsqu'on demande un pause , il ne faut pas demander un date mais juste envoyer la demande
